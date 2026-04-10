@@ -292,9 +292,12 @@
         <h1>了解真实的自己</h1>
         <p class="subtitle">
           本测试包含两个部分：<br>
-          第一部分：30道行为测试题（填空题）<br>
-          第二部分：60道BFI-2人格测试题（选择题）<br>
-          全程约需15-20分钟，请在安静的环境下独立完成。
+          第一部分：2道行为测试题（填空题）<br>
+          第二部分：5道BFI-2人格测试题（选择题）<br>
+          <small style="color: var(--muted); font-size: 14px;">
+            ⚠️ 当前为测试版本，完整版包含30道行为测试+60道BFI-2测试
+          </small><br>
+          全程约需2分钟，请在安静的环境下独立完成。
         </p>
         <button class="btn" onclick="startTest()">开始测试</button>
       </div>
@@ -359,10 +362,12 @@
   <script>
     // ===== 数据定义 =====
 
-    // 行为测试题目（30道填空题）
+    // 行为测试题目（测试版：只保留2道题）
     const behaviorQuestions = [
       { id: 'b1', text: '在过去一周内，你花在社交活动上的时间大约是：_____ 小时', placeholder: '请输入数字' },
-      { id: 'b2', text: '你通常每天使用社交媒体的时间是：_____ 小时', placeholder: '请输入数字' },
+      { id: 'b2', text: '你通常每天使用社交媒体的时间是：_____ 小时', placeholder: '请输入数字' }
+      /* 完整版题目（取消注释以启用所有30道题）
+      ,
       { id: 'b3', text: '你每周运动的次数是：_____ 次', placeholder: '请输入数字' },
       { id: 'b4', text: '你每晚平均睡眠时间是：_____ 小时', placeholder: '请输入数字' },
       { id: 'b5', text: '你每天阅读（书籍/文章）的时间是：_____ 分钟', placeholder: '请输入数字' },
@@ -391,15 +396,18 @@
       { id: 'b28', text: '你每天做决策（大小决策）的次数是：_____ 次', placeholder: '请输入数字' },
       { id: 'b29', text: '你每周参与竞争性活动（比赛/辩论等）的次数是：_____ 次', placeholder: '请输入数字' },
       { id: 'b30', text: '你每天感恩或积极思考的时间是：_____ 分钟', placeholder: '请输入数字' }
+      */
     ];
 
-    // BFI-2 题目（60道，1-5分选择题）
+    // BFI-2 题目（测试版：只保留5道题，每个维度各1题）
     const bfi2Questions = [
       { id: 'bfi1', text: '性格外向，喜欢交际', dim: 'E', reverse: false },
       { id: 'bfi2', text: '心肠柔软，有同情心', dim: 'A', reverse: false },
       { id: 'bfi3', text: '缺乏条理', dim: 'C', reverse: true },
       { id: 'bfi4', text: '从容，善于处理压力', dim: 'N', reverse: true },
-      { id: 'bfi5', text: '对艺术没有什么兴趣', dim: 'O', reverse: true },
+      { id: 'bfi5', text: '对艺术没有什么兴趣', dim: 'O', reverse: true }
+      /* 完整版题目（取消注释以启用所有60道题）
+      ,
       { id: 'bfi6', text: '性格坚定自信，敢于表达自己的观点', dim: 'E', reverse: false },
       { id: 'bfi7', text: '为人恭谦，尊重他人', dim: 'A', reverse: false },
       { id: 'bfi8', text: '比较懒', dim: 'C', reverse: true },
@@ -455,6 +463,7 @@
       { id: 'bfi58', text: '有时候会做出一些不负责任的行为', dim: 'C', reverse: true },
       { id: 'bfi59', text: '情绪多变，容易愤怒', dim: 'N', reverse: false },
       { id: 'bfi60', text: '有创意，能想出新点子', dim: 'O', reverse: false }
+      */
     ];
 
     // 合并所有题目
@@ -707,60 +716,41 @@
       showScreen('result-screen');
     }
 
-    // ===== Google Sheets 集成 =====
+    // ===== Google Sheets 集成（使用 Apps Script）=====
 
     async function saveToGoogleSheets(data) {
-      // TODO: 这里需要配置 Google Sheets API
-      // 步骤：
-      // 1. 在 Google Cloud Console 创建项目
-      // 2. 启用 Google Sheets API
-      // 3. 创建 API 密钥或 OAuth 凭据
-      // 4. 创建一个 Google Sheets 表格
-      // 5. 替换下面的 SHEET_ID 和 API_KEY
+      // 替换为你的 Google Apps Script Web 应用 URL
+      // 部署步骤见 DEPLOY_GUIDE.md
+      const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxmrCZwrcaa1x7PBnuMLKsNB4AKP55WqulzQnq_BgFPuJ8B-MZuEtqgoo9Oy3675yuwzw/exec';
 
-      const SHEET_ID = 'YOUR_SHEET_ID_HERE'; // 替换为你的表格ID
-      const API_KEY = 'YOUR_API_KEY_HERE';   // 替换为你的API密钥
-
-      // 准备行数据
-      const rowData = [
-        new Date().toISOString(),
-        data.userInfo.userId,
-        data.userInfo.email,
-        JSON.stringify(data.behaviorAnswers),
-        JSON.stringify(data.bfi2Answers),
-        data.bfi2Scores.E,
-        data.bfi2Scores.A,
-        data.bfi2Scores.C,
-        data.bfi2Scores.N,
-        data.bfi2Scores.O,
-        data.animalType.name
-      ];
+      // 如果还没配置 Apps Script URL，提示用户下载数据
+      if (SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_HERE') {
+        console.warn('未配置 Google Apps Script URL，数据将下载到本地');
+        alert('数据存储未配置，测试结果将下载到本地');
+        downloadAsJSON(data);
+        return;
+      }
 
       try {
-        // 使用 Google Sheets API 追加数据
-        // 注意：这需要设置 CORS 和认证
-        const response = await fetch(
-          `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Sheet1:append?valueInputOption=RAW&key=${API_KEY}`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              values: [rowData]
-            })
-          }
-        );
+        // 提交数据到 Google Apps Script
+        const response = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors', // Apps Script 需要 no-cors 模式
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
 
-        if (response.ok) {
-          console.log('数据已保存到 Google Sheets');
-        } else {
-          console.error('保存失败:', await response.text());
-          // 降级方案：下载到本地
-          downloadAsJSON(data);
-        }
+        // 注意：no-cors 模式下无法读取响应，但数据已提交
+        console.log('数据已提交到 Google Sheets');
+
+        // 可选：也保存一份到本地
+        // downloadAsJSON(data);
+
       } catch (error) {
         console.error('保存出错:', error);
+        alert('数据提交失败，将下载到本地');
         // 降级方案：下载到本地
         downloadAsJSON(data);
       }

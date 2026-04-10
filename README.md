@@ -35,48 +35,53 @@
 
 ## 🚀 快速开始
 
-### 1. 本地预览
+### 1. 本地预览（30秒）
 
 ```bash
 cd personality-test
-
-# 使用 Python 启动本地服务器
 python -m http.server 8000
-
-# 或使用 Node.js
-npx serve .
 ```
 
-在浏览器中打开 `http://localhost:8000`
+打开浏览器访问 `http://localhost:8000`
 
-### 2. 配置数据存储
+### 2. 配置数据存储（2分钟）
 
-请查看 [SETUP_GUIDE.md](SETUP_GUIDE.md) 了解如何配置 Google Sheets 数据存储。
+**强烈推荐使用 Google Apps Script 方案（最简单且安全）：**
 
-**重要：** 在正式使用前，你需要：
-1. 创建 Google Cloud 项目
-2. 启用 Google Sheets API
-3. 创建 API 凭据
-4. 创建 Google Sheets 表格
-5. 在 `index.html` 中配置表格ID和API密钥
+📖 详细步骤见 **[QUICKSTART.md](QUICKSTART.md)** - 5分钟完成所有配置！
 
-### 3. 部署到线上
+简要步骤：
+1. 创建 Google Sheets 表格
+2. 在表格中创建 Apps Script（复制粘贴代码）
+3. 部署为 Web 应用，获取 URL
+4. 在 `index.html` 中替换 URL
+5. 测试并推送到 GitHub
 
-#### GitHub Pages
+### 3. 部署到线上（1分钟）
+
+#### GitHub Pages（推荐）
 
 ```bash
-git init
-git add .
-git commit -m "Initial commit"
-git remote add origin https://github.com/yourusername/personality-test.git
+# 推送代码
 git push -u origin main
+
+# 在 GitHub 仓库设置中启用 Pages
 ```
 
-然后在 GitHub 仓库设置中启用 Pages。
+你的网页将发布到：`https://你的用户名.github.io/personality-test/`
 
-#### Vercel/Netlify
+#### 其他部署方式
 
-直接导入 GitHub 仓库即可自动部署。
+- **Vercel**: 导入 GitHub 仓库自动部署
+- **Netlify**: 拖拽文件夹即可部署
+
+---
+
+## 📚 详细文档
+
+- [QUICKSTART.md](QUICKSTART.md) - 5分钟快速部署指南 ⭐ 推荐
+- [DEPLOY_GUIDE.md](DEPLOY_GUIDE.md) - 安全部署完整指南
+- [SETUP_GUIDE.md](SETUP_GUIDE.md) - Google Sheets API 配置（高级）
 
 ## 📁 项目结构
 
