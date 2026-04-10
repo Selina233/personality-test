@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>人格与行为测试</title>
+  <style>
+    :root {
+      --bg: #f6faf6;
+      --panel: #ffffff;
+      --text: #1e2a22;
+      --muted: #6a786f;
+      --line: #dbe8dd;
+      --soft: #edf6ef;
+      --accent: #6c8d71;
+      --accent-strong: #4d6a53;
+      --shadow: 0 16px 40px rgba(47, 73, 55, 0.08);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: radial-gradient(circle at top left, #f8fff8 0, #f6faf6 36%, #f2f7f3 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .shell {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 24px 16px 56px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      padding: 28px;
+      margin-top: 20px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -60px;
+      top: -60px;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: linear-gradient(180deg, rgba(127, 165, 134, 0.18), rgba(127, 165, 134, 0.02));
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 700;
+      margin: 0 0 12px;
+      line-height: 1.2;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      color: var(--muted);
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 14px 32px;
+      font-size: 16px;
+      font-weight: 600;
+      color: #fff;
+      background: var(--accent);
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn:hover {
+      background: var(--accent-strong);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .progress {
+      height: 8px;
+      background: var(--soft);
+      border-radius: 4px;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: var(--accent);
+      transition: width 0.3s;
+    }
+
+    .question {
+      padding: 28px;
+      margin-top: 20px;
+    }
+
+    .question-text {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    .question-number {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .option {
+      padding: 16px 20px;
+      background: var(--soft);
+      border: 2px solid transparent;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .option:hover {
+      border-color: var(--accent);
+      background: #fff;
+    }
+
+    .option.selected {
+      border-color: var(--accent);
+      background: #fff;
+      box-shadow: 0 4px 12px rgba(108, 141, 113, 0.15);
+    }
+
+    .input-text {
+      width: 100%;
+      padding: 14px 18px;
+      font-size: 16px;
+      border: 2px solid var(--line);
+      border-radius: 12px;
+      font-family: inherit;
+      transition: border-color 0.2s;
+    }
+
+    .input-text:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .navigation {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .btn-secondary {
+      background: var(--soft);
+      color: var(--text);
+    }
+
+    .btn-secondary:hover {
+      background: var(--line);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .result {
+      padding: 28px;
+      margin-top: 20px;
+    }
+
+    .score-section {
+      margin-bottom: 24px;
+      padding: 20px;
+      background: var(--soft);
+      border-radius: 12px;
+    }
+
+    .score-label {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .score-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .animal-result {
+      text-align: center;
+      padding: 40px 20px;
+      background: linear-gradient(135deg, #f8fff8 0%, #edf6ef 100%);
+      border-radius: 16px;
+      margin-bottom: 24px;
+    }
+
+    .animal-emoji {
+      font-size: 80px;
+      margin-bottom: 16px;
+    }
+
+    .animal-name {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--accent-strong);
+      margin-bottom: 8px;
+    }
+
+    .animal-desc {
+      font-size: 16px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .scores-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .user-info {
+      margin-bottom: 24px;
+      padding: 20px;
+      background: var(--soft);
+      border-radius: 12px;
+    }
+
+    .user-info label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+
+    .user-info input {
+      width: 100%;
+      padding: 12px 16px;
+      font-size: 16px;
+      border: 2px solid var(--line);
+      border-radius: 8px;
+      margin-bottom: 16px;
+    }
+
+    .user-info input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <!-- 开始页面 -->
+    <div id="start-screen">
+      <div class="card hero">
+        <div class="eyebrow">人格与行为测试</div>
+        <h1>了解真实的自己</h1>
+        <p class="subtitle">
+          本测试包含两个部分：<br>
+          第一部分：30道行为测试题（填空题）<br>
+          第二部分：60道BFI-2人格测试题（选择题）<br>
+          全程约需15-20分钟，请在安静的环境下独立完成。
+        </p>
+        <button class="btn" onclick="startTest()">开始测试</button>
+      </div>
+    </div>
+
+    <!-- 用户信息收集 -->
+    <div id="user-info-screen" class="hidden">
+      <div class="card question">
+        <div class="question-number">开始之前</div>
+        <h2>请填写基本信息</h2>
+        <div class="user-info">
+          <label for="user-id">你的ID或昵称（必填）</label>
+          <input type="text" id="user-id" placeholder="请输入你的ID或昵称" required>
+
+          <label for="user-email">邮箱（选填）</label>
+          <input type="email" id="user-email" placeholder="用于接收测试结果">
+        </div>
+        <button class="btn" onclick="confirmUserInfo()">开始答题</button>
+      </div>
+    </div>
+
+    <!-- 测试进行中 -->
+    <div id="test-screen" class="hidden">
+      <div class="progress">
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+
+      <div class="card question">
+        <div class="question-number" id="question-number"></div>
+        <div class="question-text" id="question-text"></div>
+        <div id="question-content"></div>
+
+        <div class="navigation">
+          <button class="btn btn-secondary" onclick="previousQuestion()" id="btn-prev">上一题</button>
+          <button class="btn" onclick="nextQuestion()" id="btn-next">下一题</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 结果页面 -->
+    <div id="result-screen" class="hidden">
+      <div class="card result">
+        <h1>测试完成！</h1>
+
+        <div class="animal-result" id="animal-result">
+          <div class="animal-emoji" id="animal-emoji">🦁</div>
+          <div class="animal-name" id="animal-name">你的人格类型</div>
+          <div class="animal-desc" id="animal-desc">基于你的大五人格测试结果生成</div>
+        </div>
+
+        <h2>大五人格维度得分</h2>
+        <div class="scores-grid" id="scores-grid"></div>
+
+        <div style="margin-top: 24px;">
+          <button class="btn" onclick="downloadResults()">下载结果</button>
+          <button class="btn btn-secondary" onclick="location.reload()">重新测试</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== 数据定义 =====
+
+    // 行为测试题目（30道填空题）
+    const behaviorQuestions = [
+      { id: 'b1', text: '在过去一周内，你花在社交活动上的时间大约是：_____ 小时', placeholder: '请输入数字' },
+      { id: 'b2', text: '你通常每天使用社交媒体的时间是：_____ 小时', placeholder: '请输入数字' },
+      { id: 'b3', text: '你每周运动的次数是：_____ 次', placeholder: '请输入数字' },
+      { id: 'b4', text: '你每晚平均睡眠时间是：_____ 小时', placeholder: '请输入数字' },
+      { id: 'b5', text: '你每天阅读（书籍/文章）的时间是：_____ 分钟', placeholder: '请输入数字' },
+      { id: 'b6', text: '你每周参加团体活动的次数是：_____ 次', placeholder: '请输入数字' },
+      { id: 'b7', text: '你通常在工作/学习上花费：_____ 小时/天', placeholder: '请输入数字' },
+      { id: 'b8', text: '你每周与朋友见面的次数是：_____ 次', placeholder: '请输入数字' },
+      { id: 'b9', text: '你每天花在娱乐（游戏/电影等）上的时间是：_____ 小时', placeholder: '请输入数字' },
+      { id: 'b10', text: '你每周尝试新事物（新餐厅/新活动等）的次数是：_____ 次', placeholder: '请输入数字' },
+      { id: 'b11', text: '你每天独处的时间大约是：_____ 小时', placeholder: '请输入数字' },
+      { id: 'b12', text: '你每周参与志愿活动或帮助他人的时间是：_____ 小时', placeholder: '请输入数字' },
+      { id: 'b13', text: '你每天计划和安排任务的时间是：_____ 分钟', placeholder: '请输入数字' },
+      { id: 'b14', text: '你每周感到压力或焦虑的天数是：_____ 天', placeholder: '请输入数字' },
+      { id: 'b15', text: '你每月参观博物馆/画展等艺术活动的次数是：_____ 次', placeholder: '请输入数字' },
+      { id: 'b16', text: '你每天与家人交流的时间是：_____ 分钟', placeholder: '请输入数字' },
+      { id: 'b17', text: '你每周完成待办事项的比例是：_____ %', placeholder: '请输入0-100的数字' },
+      { id: 'b18', text: '你每天思考人生意义/哲学问题的时间是：_____ 分钟', placeholder: '请输入数字' },
+      { id: 'b19', text: '你每周拖延任务的次数是：_____ 次', placeholder: '请输入数字' },
+      { id: 'b20', text: '你每天听音乐的时间是：_____ 小时', placeholder: '请输入数字' },
+      { id: 'b21', text: '你每周主动发起社交活动的次数是：_____ 次', placeholder: '请输入数字' },
+      { id: 'b22', text: '你每天冥想或放松的时间是：_____ 分钟', placeholder: '请输入数字' },
+      { id: 'b23', text: '你每周学习新技能或知识的时间是：_____ 小时', placeholder: '请输入数字' },
+      { id: 'b24', text: '你每天整理房间/工作区域的时间是：_____ 分钟', placeholder: '请输入数字' },
+      { id: 'b25', text: '你每周感到快乐或满足的天数是：_____ 天', placeholder: '请输入数字' },
+      { id: 'b26', text: '你每天写作（日记/博客/创作）的时间是：_____ 分钟', placeholder: '请输入数字' },
+      { id: 'b27', text: '你每周与陌生人交谈的次数是：_____ 次', placeholder: '请输入数字' },
+      { id: 'b28', text: '你每天做决策（大小决策）的次数是：_____ 次', placeholder: '请输入数字' },
+      { id: 'b29', text: '你每周参与竞争性活动（比赛/辩论等）的次数是：_____ 次', placeholder: '请输入数字' },
+      { id: 'b30', text: '你每天感恩或积极思考的时间是：_____ 分钟', placeholder: '请输入数字' }
+    ];
+
+    // BFI-2 题目（60道，1-5分选择题）
+    const bfi2Questions = [
+      { id: 'bfi1', text: '性格外向，喜欢交际', dim: 'E', reverse: false },
+      { id: 'bfi2', text: '心肠柔软，有同情心', dim: 'A', reverse: false },
+      { id: 'bfi3', text: '缺乏条理', dim: 'C', reverse: true },
+      { id: 'bfi4', text: '从容，善于处理压力', dim: 'N', reverse: true },
+      { id: 'bfi5', text: '对艺术没有什么兴趣', dim: 'O', reverse: true },
+      { id: 'bfi6', text: '性格坚定自信，敢于表达自己的观点', dim: 'E', reverse: false },
+      { id: 'bfi7', text: '为人恭谦，尊重他人', dim: 'A', reverse: false },
+      { id: 'bfi8', text: '比较懒', dim: 'C', reverse: true },
+      { id: 'bfi9', text: '经历挫折后仍能保持积极心态', dim: 'N', reverse: true },
+      { id: 'bfi10', text: '对许多不同的事物都感兴趣', dim: 'O', reverse: false },
+      { id: 'bfi11', text: '很少觉得兴奋或者特别想要(做)什么', dim: 'E', reverse: true },
+      { id: 'bfi12', text: '常常挑别人的毛病', dim: 'A', reverse: true },
+      { id: 'bfi13', text: '可信赖的，可靠的', dim: 'C', reverse: false },
+      { id: 'bfi14', text: '喜怒无常，情绪起伏较多', dim: 'N', reverse: false },
+      { id: 'bfi15', text: '善于创造，能找到聪明的方法来做事', dim: 'O', reverse: false },
+      { id: 'bfi16', text: '比较安静', dim: 'E', reverse: true },
+      { id: 'bfi17', text: '对他人没有什么同情心', dim: 'A', reverse: true },
+      { id: 'bfi18', text: '做事有计划有条理', dim: 'C', reverse: false },
+      { id: 'bfi19', text: '容易紧张', dim: 'N', reverse: false },
+      { id: 'bfi20', text: '着迷于艺术、音乐或文学', dim: 'O', reverse: false },
+      { id: 'bfi21', text: '常常处于主导地位，像个领导一样', dim: 'E', reverse: false },
+      { id: 'bfi22', text: '常与他人意见不和', dim: 'A', reverse: true },
+      { id: 'bfi23', text: '很难开始行动起来去完成一项任务', dim: 'C', reverse: true },
+      { id: 'bfi24', text: '觉得有安全感，对自己满意', dim: 'N', reverse: true },
+      { id: 'bfi25', text: '不喜欢知识性或者哲学性强的讨论', dim: 'O', reverse: true },
+      { id: 'bfi26', text: '不如别人有活力', dim: 'E', reverse: true },
+      { id: 'bfi27', text: '宽宏大量', dim: 'A', reverse: false },
+      { id: 'bfi28', text: '有时比较没有责任心', dim: 'C', reverse: true },
+      { id: 'bfi29', text: '情绪稳定，不易生气', dim: 'N', reverse: true },
+      { id: 'bfi30', text: '几乎没有什么创造性', dim: 'O', reverse: true },
+      { id: 'bfi31', text: '有时会害羞，比较内向', dim: 'E', reverse: true },
+      { id: 'bfi32', text: '乐于助人，待人无私', dim: 'A', reverse: false },
+      { id: 'bfi33', text: '习惯让事物保持整洁有序', dim: 'C', reverse: false },
+      { id: 'bfi34', text: '时常忧心忡忡，担心很多事情', dim: 'N', reverse: false },
+      { id: 'bfi35', text: '重视艺术与审美', dim: 'O', reverse: false },
+      { id: 'bfi36', text: '感觉自己很难对他人产生影响', dim: 'E', reverse: true },
+      { id: 'bfi37', text: '有时对人比较粗鲁', dim: 'A', reverse: true },
+      { id: 'bfi38', text: '有效率，做事有始有终', dim: 'C', reverse: false },
+      { id: 'bfi39', text: '时常觉得悲伤', dim: 'N', reverse: false },
+      { id: 'bfi40', text: '思想深刻', dim: 'O', reverse: false },
+      { id: 'bfi41', text: '精力充沛', dim: 'E', reverse: false },
+      { id: 'bfi42', text: '不相信别人，怀疑别人的意图', dim: 'A', reverse: true },
+      { id: 'bfi43', text: '可靠的，总是值得他人信赖', dim: 'C', reverse: false },
+      { id: 'bfi44', text: '能够控制自己的情绪', dim: 'N', reverse: true },
+      { id: 'bfi45', text: '缺乏想象力', dim: 'O', reverse: true },
+      { id: 'bfi46', text: '爱说话，健谈', dim: 'E', reverse: false },
+      { id: 'bfi47', text: '有时对人冷淡，漠不关心', dim: 'A', reverse: true },
+      { id: 'bfi48', text: '乱糟糟的，不爱收拾', dim: 'C', reverse: true },
+      { id: 'bfi49', text: '很少觉得焦虑或者害怕', dim: 'N', reverse: true },
+      { id: 'bfi50', text: '觉得诗歌、戏剧很无聊', dim: 'O', reverse: true },
+      { id: 'bfi51', text: '更喜欢让别人来领头负责', dim: 'E', reverse: true },
+      { id: 'bfi52', text: '待人谦逊礼让', dim: 'A', reverse: false },
+      { id: 'bfi53', text: '有恒心，能坚持把事情做完', dim: 'C', reverse: false },
+      { id: 'bfi54', text: '时常觉得郁郁寡欢', dim: 'N', reverse: false },
+      { id: 'bfi55', text: '对抽象的概念和想法没什么兴趣', dim: 'O', reverse: true },
+      { id: 'bfi56', text: '充满热情', dim: 'E', reverse: false },
+      { id: 'bfi57', text: '把人往最好的方面想', dim: 'A', reverse: false },
+      { id: 'bfi58', text: '有时候会做出一些不负责任的行为', dim: 'C', reverse: true },
+      { id: 'bfi59', text: '情绪多变，容易愤怒', dim: 'N', reverse: false },
+      { id: 'bfi60', text: '有创意，能想出新点子', dim: 'O', reverse: false }
+    ];
+
+    // 合并所有题目
+    const allQuestions = [...behaviorQuestions, ...bfi2Questions];
+
+    // 状态管理
+    let currentQuestionIndex = 0;
+    let answers = {};
+    let userInfo = {};
+
+    // ===== 界面控制 =====
+
+    function showScreen(screenId) {
+      document.querySelectorAll('.shell > div').forEach(div => {
+        div.classList.add('hidden');
+      });
+      document.getElementById(screenId).classList.remove('hidden');
+    }
+
+    function startTest() {
+      showScreen('user-info-screen');
+    }
+
+    function confirmUserInfo() {
+      const userId = document.getElementById('user-id').value.trim();
+      if (!userId) {
+        alert('请填写你的ID或昵称');
+        return;
+      }
+
+      userInfo = {
+        userId: userId,
+        email: document.getElementById('user-email').value.trim(),
+        startTime: new Date().toISOString()
+      };
+
+      showScreen('test-screen');
+      renderQuestion();
+    }
+
+    function updateProgress() {
+      const progress = ((currentQuestionIndex + 1) / allQuestions.length) * 100;
+      document.getElementById('progress-bar').style.width = progress + '%';
+    }
+
+    function renderQuestion() {
+      const question = allQuestions[currentQuestionIndex];
+      const isBehavior = currentQuestionIndex < behaviorQuestions.length;
+      const displayIndex = currentQuestionIndex + 1;
+      const section = isBehavior ? '第一部分：行为测试' : '第二部分：BFI-2人格测试';
+
+      document.getElementById('question-number').textContent =
+        `${section} - 第 ${displayIndex}/${allQuestions.length} 题`;
+      document.getElementById('question-text').textContent =
+        isBehavior ? question.text : `我是一个${question.text}的人`;
+
+      const contentDiv = document.getElementById('question-content');
+
+      if (isBehavior) {
+        // 填空题
+        contentDiv.innerHTML = `
+          <input type="text" class="input-text" id="answer-input"
+                 placeholder="${question.placeholder}"
+                 value="${answers[question.id] || ''}"
+                 oninput="saveAnswer()">
+        `;
+      } else {
+        // 选择题
+        const options = [
+          { label: '非常不同意', value: 1 },
+          { label: '不太同意', value: 2 },
+          { label: '态度中立', value: 3 },
+          { label: '比较同意', value: 4 },
+          { label: '非常同意', value: 5 }
+        ];
+
+        contentDiv.innerHTML = `
+          <div class="options">
+            ${options.map(opt => `
+              <div class="option ${answers[question.id] === opt.value ? 'selected' : ''}"
+                   onclick="selectOption(${opt.value})">
+                ${opt.label}
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      updateProgress();
+      updateNavigationButtons();
+    }
+
+    function saveAnswer() {
+      const question = allQuestions[currentQuestionIndex];
+      const input = document.getElementById('answer-input');
+      answers[question.id] = input.value.trim();
+    }
+
+    function selectOption(value) {
+      const question = allQuestions[currentQuestionIndex];
+      answers[question.id] = value;
+      renderQuestion();
+    }
+
+    function updateNavigationButtons() {
+      document.getElementById('btn-prev').disabled = currentQuestionIndex === 0;
+
+      const nextBtn = document.getElementById('btn-next');
+      if (currentQuestionIndex === allQuestions.length - 1) {
+        nextBtn.textContent = '提交';
+      } else {
+        nextBtn.textContent = '下一题';
+      }
+    }
+
+    function previousQuestion() {
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        renderQuestion();
+      }
+    }
+
+    function nextQuestion() {
+      const question = allQuestions[currentQuestionIndex];
+
+      // 检查是否已答题
+      if (!answers[question.id]) {
+        alert('请先回答当前问题');
+        return;
+      }
+
+      if (currentQuestionIndex < allQuestions.length - 1) {
+        currentQuestionIndex++;
+        renderQuestion();
+      } else {
+        // 提交测试
+        submitTest();
+      }
+    }
+
+    // ===== 计分与结果 =====
+
+    function calculateBFI2Scores() {
+      const scores = {
+        E: [], // 外向性 Extraversion
+        A: [], // 宜人性 Agreeableness
+        C: [], // 尽责性 Conscientiousness
+        N: [], // 负性情绪 Negative Emotionality
+        O: []  // 开放性 Open-Mindedness
+      };
+
+      bfi2Questions.forEach(q => {
+        const rawScore = answers[q.id];
+        const score = q.reverse ? (6 - rawScore) : rawScore;
+        scores[q.dim].push(score);
+      });
+
+      // 计算平均分
+      const avgScores = {};
+      for (const dim in scores) {
+        const sum = scores[dim].reduce((a, b) => a + b, 0);
+        avgScores[dim] = (sum / scores[dim].length).toFixed(2);
+      }
+
+      return avgScores;
+    }
+
+    function determineAnimalType(scores) {
+      // 这里是占位符逻辑，你可以后续完善
+      // 示例：根据最高分维度映射动物
+      const animals = {
+        'E': { emoji: '🦁', name: '社交狮子', desc: '外向性突出，喜欢与人交往，充满活力和领导力' },
+        'A': { emoji: '🐼', name: '和善熊猫', desc: '宜人性突出，善良友好，乐于助人，团队协作能力强' },
+        'C': { emoji: '🦉', name: '严谨猫头鹰', desc: '尽责性突出，做事有条理，可靠负责，追求完美' },
+        'N': { emoji: '🐱', name: '敏感猫咪', desc: '情绪敏感，善于感知细微变化，富有同理心' },
+        'O': { emoji: '🦄', name: '创意独角兽', desc: '开放性突出，富有创造力和想象力，喜欢探索新事物' }
+      };
+
+      // 找出得分最高的维度
+      let maxDim = 'E';
+      let maxScore = parseFloat(scores['E']);
+
+      for (const dim in scores) {
+        if (parseFloat(scores[dim]) > maxScore) {
+          maxScore = parseFloat(scores[dim]);
+          maxDim = dim;
+        }
+      }
+
+      return animals[maxDim];
+    }
+
+    function displayResults(scores, animal) {
+      const dimensionNames = {
+        'E': '外向性 (Extraversion)',
+        'A': '宜人性 (Agreeableness)',
+        'C': '尽责性 (Conscientiousness)',
+        'N': '负性情绪 (Negative Emotionality)',
+        'O': '开放性 (Open-Mindedness)'
+      };
+
+      document.getElementById('animal-emoji').textContent = animal.emoji;
+      document.getElementById('animal-name').textContent = animal.name;
+      document.getElementById('animal-desc').textContent = animal.desc;
+
+      const scoresGrid = document.getElementById('scores-grid');
+      scoresGrid.innerHTML = '';
+
+      for (const dim in scores) {
+        const scoreDiv = document.createElement('div');
+        scoreDiv.className = 'score-section';
+        scoreDiv.innerHTML = `
+          <div class="score-label">${dimensionNames[dim]}</div>
+          <div class="score-value">${scores[dim]}</div>
+        `;
+        scoresGrid.appendChild(scoreDiv);
+      }
+    }
+
+    async function submitTest() {
+      userInfo.endTime = new Date().toISOString();
+
+      // 计算BFI-2得分
+      const bfi2Scores = calculateBFI2Scores();
+      const animalType = determineAnimalType(bfi2Scores);
+
+      // 准备完整数据
+      const testData = {
+        userInfo: userInfo,
+        behaviorAnswers: {},
+        bfi2Answers: {},
+        bfi2Scores: bfi2Scores,
+        animalType: animalType
+      };
+
+      // 分离行为测试和BFI-2答案
+      behaviorQuestions.forEach(q => {
+        testData.behaviorAnswers[q.id] = answers[q.id];
+      });
+
+      bfi2Questions.forEach(q => {
+        testData.bfi2Answers[q.id] = answers[q.id];
+      });
+
+      // 保存数据到在线表格
+      await saveToGoogleSheets(testData);
+
+      // 显示结果
+      displayResults(bfi2Scores, animalType);
+      showScreen('result-screen');
+    }
+
+    // ===== Google Sheets 集成 =====
+
+    async function saveToGoogleSheets(data) {
+      // TODO: 这里需要配置 Google Sheets API
+      // 步骤：
+      // 1. 在 Google Cloud Console 创建项目
+      // 2. 启用 Google Sheets API
+      // 3. 创建 API 密钥或 OAuth 凭据
+      // 4. 创建一个 Google Sheets 表格
+      // 5. 替换下面的 SHEET_ID 和 API_KEY
+
+      const SHEET_ID = 'YOUR_SHEET_ID_HERE'; // 替换为你的表格ID
+      const API_KEY = 'YOUR_API_KEY_HERE';   // 替换为你的API密钥
+
+      // 准备行数据
+      const rowData = [
+        new Date().toISOString(),
+        data.userInfo.userId,
+        data.userInfo.email,
+        JSON.stringify(data.behaviorAnswers),
+        JSON.stringify(data.bfi2Answers),
+        data.bfi2Scores.E,
+        data.bfi2Scores.A,
+        data.bfi2Scores.C,
+        data.bfi2Scores.N,
+        data.bfi2Scores.O,
+        data.animalType.name
+      ];
+
+      try {
+        // 使用 Google Sheets API 追加数据
+        // 注意：这需要设置 CORS 和认证
+        const response = await fetch(
+          `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Sheet1:append?valueInputOption=RAW&key=${API_KEY}`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              values: [rowData]
+            })
+          }
+        );
+
+        if (response.ok) {
+          console.log('数据已保存到 Google Sheets');
+        } else {
+          console.error('保存失败:', await response.text());
+          // 降级方案：下载到本地
+          downloadAsJSON(data);
+        }
+      } catch (error) {
+        console.error('保存出错:', error);
+        // 降级方案：下载到本地
+        downloadAsJSON(data);
+      }
+    }
+
+    function downloadAsJSON(data) {
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `test-result-${data.userInfo.userId}-${Date.now()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function downloadResults() {
+      const bfi2Scores = calculateBFI2Scores();
+      const animalType = determineAnimalType(bfi2Scores);
+
+      const data = {
+        userInfo: userInfo,
+        behaviorAnswers: {},
+        bfi2Answers: {},
+        bfi2Scores: bfi2Scores,
+        animalType: animalType
+      };
+
+      behaviorQuestions.forEach(q => {
+        data.behaviorAnswers[q.id] = answers[q.id];
+      });
+
+      bfi2Questions.forEach(q => {
+        data.bfi2Answers[q.id] = answers[q.id];
+      });
+
+      downloadAsJSON(data);
+    }
+  </script>
+</body>
+</html>
