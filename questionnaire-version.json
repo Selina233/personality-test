@@ -1,0 +1,24 @@
+{
+  "version": "v1.0.0",
+  "releaseDate": "2026-04-10",
+  "description": "初始版本：2道行为测试+5道BFI-2测试（测试版）",
+  "questionCounts": {
+    "behavior": 2,
+    "bfi2": 5,
+    "total": 7
+  },
+  "animalTypes": 32,
+  "changelog": [
+    {
+      "version": "v1.0.0",
+      "date": "2026-04-10",
+      "changes": [
+        "初始发布",
+        "2道行为测试题",
+        "5道BFI-2测试题（每维度各1题）",
+        "32种动物映射",
+        "基于常模的高低判断"
+      ]
+    }
+  ]
+}

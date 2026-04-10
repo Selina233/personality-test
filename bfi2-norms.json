@@ -1,0 +1,47 @@
+{
+  "version": "1.0",
+  "description": "BFI-2中国常模-大学生数据 (n=1194)",
+  "source": "《大五人格问卷第二版（BFI-2）在中国：四个多样化样本的全面心理测量评估》",
+  "norms": {
+    "E": {
+      "name": "外向性",
+      "englishName": "Extraversion",
+      "mean": 3.19,
+      "std": 0.72,
+      "description": "测量一个人对外部世界的关注度及社交能量的获取方式"
+    },
+    "A": {
+      "name": "宜人性",
+      "englishName": "Agreeableness",
+      "mean": 3.69,
+      "std": 0.53,
+      "description": "测量一个人在人际交往中的合作性、同情心与信任感"
+    },
+    "C": {
+      "name": "尽责性",
+      "englishName": "Conscientiousness",
+      "mean": 3.29,
+      "std": 0.65,
+      "description": "测量一个人的自律程度、条理性与成就驱动力"
+    },
+    "N": {
+      "name": "神经质",
+      "englishName": "Neuroticism",
+      "mean": 2.96,
+      "std": 0.69,
+      "description": "测量一个人的情绪稳定性及对压力、焦虑的敏感度"
+    },
+    "O": {
+      "name": "开放性",
+      "englishName": "Open-Mindedness",
+      "mean": 3.57,
+      "std": 0.64,
+      "description": "测量一个人对新事物、新思想的接受程度与好奇心"
+    }
+  },
+  "interpretations": {
+    "high": "高于常模（大于均值+0.5标准差）",
+    "mid": "接近常模（均值±0.5标准差范围内）",
+    "low": "低于常模（小于均值-0.5标准差）"
+  }
+}

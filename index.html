@@ -289,17 +289,53 @@
     <div id="start-screen">
       <div class="card hero">
         <div class="eyebrow">人格与行为测试</div>
-        <h1>了解真实的自己</h1>
+        <h1>你的隐藏动物人格是什么？</h1>
         <p class="subtitle">
-          本测试包含两个部分：<br>
-          第一部分：2道行为测试题（填空题）<br>
-          第二部分：5道BFI-2人格测试题（选择题）<br>
-          <small style="color: var(--muted); font-size: 14px;">
-            ⚠️ 当前为测试版本，完整版包含30道行为测试+60道BFI-2测试
-          </small><br>
-          全程约需2分钟，请在安静的环境下独立完成。
+          有人是蟑螂王，有人是小猫咪……<br>
+          <strong>基于大五人格的动物映射人格测试</strong>
         </p>
-        <button class="btn" onclick="startTest()">开始测试</button>
+
+        <div style="background:#f8f9fa;padding:20px;border-radius:12px;margin:20px 0;text-align:left;">
+          <h3 style="margin-top:0;">🧠 知情说明</h3>
+          <p style="line-height:1.6;color:#555;">
+            本测试同时用于一项关于"人格与行为"的科研研究。<br>
+            你的参与是<strong>完全自愿的</strong>，所有数据将以匿名形式进行分析，不涉及任何个人身份识别。<br>
+            你可以随时退出或选择仅体验部分内容。<br>
+            <strong>点击开始，即表示你已了解上述信息并同意参与。</strong>
+          </p>
+        </div>
+
+        <div style="text-align:left;margin-top:30px;">
+          <h3>请选择你的参与方式：</h3>
+
+          <div style="border:2px solid var(--accent);border-radius:12px;padding:20px;margin-bottom:20px;background:#fff;">
+            <div style="display:flex;align-items:center;margin-bottom:10px;">
+              <span style="font-size:24px;margin-right:10px;">🔬</span>
+              <h4 style="margin:0;color:var(--accent);">研究模式（推荐）</h4>
+            </div>
+            <p style="font-weight:600;margin:5px 0;">深度参与，助力学术研究</p>
+            <ul style="line-height:1.8;color:#555;">
+              <li><strong>流程：</strong>完整填写问卷（约 20-25 分钟），获取深度版人格分析报告</li>
+              <li><strong>激励：</strong>参与总额 <span style="color:#e74c3c;font-weight:600;">2000 元</span>的现金抽奖。请留下手机号，中奖后将通过支付宝发放</li>
+              <li><strong>反馈：</strong>可选留邮箱，我们将在一周内为您发送一份专业的人格分析报告</li>
+              <li><strong>注：</strong>您的联系方式仅用于发放奖励和反馈结果，数据将进行匿名化处理，符合伦理规范</li>
+            </ul>
+            <button class="btn" onclick="startTest('research')" style="width:100%;margin-top:10px;">选择研究模式</button>
+          </div>
+
+          <div style="border:2px solid #ddd;border-radius:12px;padding:20px;background:#f8f9fa;">
+            <div style="display:flex;align-items:center;margin-bottom:10px;">
+              <span style="font-size:24px;margin-right:10px;">🎲</span>
+              <h4 style="margin:0;">体验模式</h4>
+            </div>
+            <p style="font-weight:600;margin:5px 0;">快速测试，即刻获取结果</p>
+            <ul style="line-height:1.8;color:#555;">
+              <li><strong>流程：</strong>仅需 5 分钟，快速匹配你的动物人格形象</li>
+              <li><strong>说明：</strong>体验模式不参与抽奖，数据不进入学术分析样本库</li>
+            </ul>
+            <button class="btn btn-secondary" onclick="startTest('experience')" style="width:100%;margin-top:10px;">选择体验模式</button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -312,8 +348,13 @@
           <label for="user-id">你的ID或昵称（必填）</label>
           <input type="text" id="user-id" placeholder="请输入你的ID或昵称" required>
 
-          <label for="user-email">邮箱（选填）</label>
+          <label for="user-email">邮箱（选填）<span id="email-note"></span></label>
           <input type="email" id="user-email" placeholder="用于接收测试结果">
+
+          <div id="phone-field" class="hidden">
+            <label for="user-phone">手机号（研究模式必填，用于抽奖）</label>
+            <input type="tel" id="user-phone" placeholder="请输入11位手机号">
+          </div>
         </div>
         <button class="btn" onclick="confirmUserInfo()">开始答题</button>
       </div>
@@ -341,6 +382,7 @@
     <div id="result-screen" class="hidden">
       <div class="card result">
         <h1>测试完成！</h1>
+        <p style="color:var(--muted);font-size:14px;">测试用时：<span id="test-duration"></span></p>
 
         <div class="animal-result" id="animal-result">
           <div class="animal-emoji" id="animal-emoji">🦁</div>
@@ -351,9 +393,59 @@
         <h2>大五人格维度得分</h2>
         <div class="scores-grid" id="scores-grid"></div>
 
-        <div style="margin-top: 24px;">
-          <button class="btn" onclick="downloadResults()">下载结果</button>
-          <button class="btn btn-secondary" onclick="location.reload()">重新测试</button>
+        <div style="margin-top:40px;padding:25px;background:#f8f9fa;border-radius:12px;text-align:left;">
+          <h2 style="color:var(--accent);margin-top:0;">💡 什么是大五人格？</h2>
+          <p style="line-height:1.8;margin-bottom:20px;">
+            大五人格通常被缩写为 <strong>OCEAN（海洋）</strong>，每个字母代表一个核心维度：
+          </p>
+
+          <div style="margin-bottom:20px;">
+            <h3 style="color:#4A90E2;margin-bottom:8px;">🌊 O - 开放性 (Openness to Experience)</h3>
+            <p style="margin-left:20px;line-height:1.7;color:#555;">
+              <strong>测试什么：</strong>测量一个人对新事物、新思想的接受程度与好奇心。<br>
+              <strong>表现：</strong>高分者通常富有想象力、追求多样性、审美感强；低分者则更倾向于实际、守旧，喜欢熟悉的常规生活。
+            </p>
+          </div>
+
+          <div style="margin-bottom:20px;">
+            <h3 style="color:#7ED321;margin-bottom:8px;">📋 C - 尽责性 (Conscientiousness)</h3>
+            <p style="margin-left:20px;line-height:1.7;color:#555;">
+              <strong>测试什么：</strong>测量一个人的自律程度、条理性与成就驱动力。<br>
+              <strong>表现：</strong>高分者做事井井有条、可靠、有计划性；低分者则可能较为随性、容易分心、甚至有些丢三落四。
+            </p>
+          </div>
+
+          <div style="margin-bottom:20px;">
+            <h3 style="color:#F5A623;margin-bottom:8px;">🎉 E - 外向性 (Extraversion)</h3>
+            <p style="margin-left:20px;line-height:1.7;color:#555;">
+              <strong>测试什么：</strong>测量一个人对外部世界的关注度及社交能量的获取方式。<br>
+              <strong>表现：</strong>高分者热情、自信、喜欢社交，在人群中感到兴奋；低分者（内向性）则更倾向于独处，在安静的环境中恢复能量，社交表现较为内敛。
+            </p>
+          </div>
+
+          <div style="margin-bottom:20px;">
+            <h3 style="color:#BD10E0;margin-bottom:8px;">🤝 A - 宜人性 (Agreeableness)</h3>
+            <p style="margin-left:20px;line-height:1.7;color:#555;">
+              <strong>测试什么：</strong>测量一个人在人际交往中的合作性、同情心与信任感。<br>
+              <strong>表现：</strong>高分者谦逊、乐于助人、重视和谐；低分者则更具竞争性、直率，有时甚至会表现得冷漠或好斗。
+            </p>
+          </div>
+
+          <div style="margin-bottom:20px;">
+            <h3 style="color:#E94B3C;margin-bottom:8px;">😰 N - 神经质 (Neuroticism)</h3>
+            <p style="margin-left:20px;line-height:1.7;color:#555;">
+              <strong>测试什么：</strong>测量一个人的情绪稳定性及对压力、焦虑的敏感度。<br>
+              <strong>表现：</strong>高分者容易产生情绪波动，对负面刺激反应强烈；低分者则情绪稳定，在压力面前能保持冷静，不容易感到焦虑或沮丧。
+            </p>
+          </div>
+
+          <p style="font-size:13px;color:#999;margin-top:20px;border-top:1px solid #ddd;padding-top:15px;">
+            注：本测试结果基于BFI-2中国常模（大学生群体，n=1194），"高"、"低"为相对常模而言。
+          </p>
+        </div>
+
+        <div style="margin-top:30px;text-align:center;color:#999;font-size:14px;">
+          感谢你的参与！🎉
         </div>
       </div>
     </div>
@@ -364,6 +456,8 @@
 
     // 动物类型数据库（从外部JSON加载）
     let animalDatabase = [];
+    let bfi2Norms = null;
+    let questionnaireVersion = null;
 
     // 加载动物数据库
     fetch('animal-database.json')
@@ -374,7 +468,6 @@
       })
       .catch(error => {
         console.error('加载动物数据库失败:', error);
-        // 降级方案：使用默认数据
         animalDatabase = [{
           name: '宇宙终极小猫咪',
           tagline: '喵~',
@@ -385,6 +478,28 @@
           strength: '全能与可爱',
           weakness: '无法预测'
         }];
+      });
+
+    // 加载BFI-2常模数据
+    fetch('bfi2-norms.json')
+      .then(response => response.json())
+      .then(data => {
+        bfi2Norms = data;
+        console.log('已加载BFI-2常模数据');
+      })
+      .catch(error => {
+        console.error('加载常模数据失败:', error);
+      });
+
+    // 加载问卷版本信息
+    fetch('questionnaire-version.json')
+      .then(response => response.json())
+      .then(data => {
+        questionnaireVersion = data;
+        console.log(`问卷版本: ${data.version}`);
+      })
+      .catch(error => {
+        console.error('加载问卷版本失败:', error);
       });
 
     // 行为测试题目（测试版：只保留2道题）
@@ -498,6 +613,9 @@
     let currentQuestionIndex = 0;
     let answers = {};
     let userInfo = {};
+    let testMode = 'experience'; // 'research' 或 'experience'
+    let testStartTime = null;
+    let testEndTime = null;
 
     // ===== 界面控制 =====
 
@@ -508,8 +626,21 @@
       document.getElementById(screenId).classList.remove('hidden');
     }
 
-    function startTest() {
+    function startTest(mode) {
+      testMode = mode;
       showScreen('user-info-screen');
+
+      // 显示/隐藏手机号字段
+      const phoneField = document.getElementById('phone-field');
+      const emailNote = document.getElementById('email-note');
+
+      if (mode === 'research') {
+        phoneField.classList.remove('hidden');
+        emailNote.textContent = ' - 研究模式推荐填写';
+      } else {
+        phoneField.classList.add('hidden');
+        emailNote.textContent = '';
+      }
     }
 
     function confirmUserInfo() {
@@ -519,12 +650,29 @@
         return;
       }
 
+      // 研究模式需要手机号
+      const phone = document.getElementById('user-phone').value.trim();
+      if (testMode === 'research' && !phone) {
+        alert('研究模式需要填写手机号以参与抽奖');
+        return;
+      }
+
+      // 验证手机号格式
+      if (phone && !/^1[3-9]\d{9}$/.test(phone)) {
+        alert('请输入有效的11位手机号');
+        return;
+      }
+
       userInfo = {
         userId: userId,
         email: document.getElementById('user-email').value.trim(),
+        phone: phone || null,
+        testMode: testMode,
+        questionnaireVersion: questionnaireVersion ? questionnaireVersion.version : 'unknown',
         startTime: new Date().toISOString()
       };
 
+      testStartTime = Date.now();
       showScreen('test-screen');
       renderQuestion();
     }
@@ -624,8 +772,22 @@
         currentQuestionIndex++;
         renderQuestion();
       } else {
-        // 提交测试
-        submitTest();
+        // 提交测试 - 禁用按钮并显示加载状态
+        const nextBtn = document.getElementById('btn-next');
+        nextBtn.disabled = true;
+        nextBtn.textContent = '正在提交...';
+        nextBtn.style.opacity = '0.6';
+        nextBtn.style.cursor = 'not-allowed';
+
+        // 记录结束时间
+        testEndTime = Date.now();
+        userInfo.endTime = new Date().toISOString();
+        userInfo.durationSeconds = Math.round((testEndTime - testStartTime) / 1000);
+
+        // 延迟提交以显示加载状态
+        setTimeout(() => {
+          submitTest();
+        }, 500);
       }
     }
 
@@ -657,19 +819,31 @@
     }
 
     function determineAnimalType(scores) {
-      // 计算特征匹配度
-      function getTraitValue(value) {
-        if (value >= 4) return 'high';
-        if (value <= 2) return 'low';
+      // 根据常模计算特征值
+      function getTraitValue(dim, score) {
+        if (!bfi2Norms || !bfi2Norms.norms[dim]) {
+          // 降级方案：使用简单阈值
+          if (score >= 4) return 'high';
+          if (score <= 2) return 'low';
+          return 'mid';
+        }
+
+        const norm = bfi2Norms.norms[dim];
+        const mean = norm.mean;
+        const std = norm.std;
+
+        // 使用0.5个标准差作为阈值
+        if (score > mean + 0.5 * std) return 'high';
+        if (score < mean - 0.5 * std) return 'low';
         return 'mid';
       }
 
       const userTraits = {
-        O: getTraitValue(parseFloat(scores.O)),
-        E: getTraitValue(parseFloat(scores.E)),
-        C: getTraitValue(parseFloat(scores.C)),
-        A: getTraitValue(parseFloat(scores.A)),
-        N: getTraitValue(parseFloat(scores.N))
+        O: getTraitValue('O', parseFloat(scores.O)),
+        E: getTraitValue('E', parseFloat(scores.E)),
+        C: getTraitValue('C', parseFloat(scores.C)),
+        A: getTraitValue('A', parseFloat(scores.A)),
+        N: getTraitValue('N', parseFloat(scores.N))
       };
 
       // 找最匹配的动物
@@ -701,7 +875,9 @@
         image: bestMatch.image,
         desc: bestMatch.description,
         strength: bestMatch.strength,
-        weakness: bestMatch.weakness
+        weakness: bestMatch.weakness,
+        matchScore: maxScore,
+        userTraits: userTraits  // 保存用户特征用于数据分析
       };
     }
 
@@ -710,9 +886,15 @@
         'E': '外向性 (Extraversion)',
         'A': '宜人性 (Agreeableness)',
         'C': '尽责性 (Conscientiousness)',
-        'N': '负性情绪 (Negative Emotionality)',
+        'N': '神经质 (Neuroticism)',
         'O': '开放性 (Open-Mindedness)'
       };
+
+      // 显示测试用时
+      const minutes = Math.floor(userInfo.durationSeconds / 60);
+      const seconds = userInfo.durationSeconds % 60;
+      document.getElementById('test-duration').textContent =
+        `${minutes}分${seconds}秒`;
 
       // 显示动物图片
       const animalEmoji = document.getElementById('animal-emoji');
@@ -739,8 +921,26 @@
       for (const dim in scores) {
         const scoreDiv = document.createElement('div');
         scoreDiv.className = 'score-section';
+
+        // 添加相对常模的标签
+        let normLabel = '';
+        if (bfi2Norms && bfi2Norms.norms[dim]) {
+          const norm = bfi2Norms.norms[dim];
+          const score = parseFloat(scores[dim]);
+          const mean = norm.mean;
+          const std = norm.std;
+
+          if (score > mean + 0.5 * std) {
+            normLabel = '<span style="color:#4d6a53;font-size:12px;">（高于常模）</span>';
+          } else if (score < mean - 0.5 * std) {
+            normLabel = '<span style="color:#c56c5c;font-size:12px;">（低于常模）</span>';
+          } else {
+            normLabel = '<span style="color:#999;font-size:12px;">（接近常模）</span>';
+          }
+        }
+
         scoreDiv.innerHTML = `
-          <div class="score-label">${dimensionNames[dim]}</div>
+          <div class="score-label">${dimensionNames[dim]} ${normLabel}</div>
           <div class="score-value">${scores[dim]}</div>
         `;
         scoresGrid.appendChild(scoreDiv);
@@ -748,8 +948,6 @@
     }
 
     async function submitTest() {
-      userInfo.endTime = new Date().toISOString();
-
       // 计算BFI-2得分
       const bfi2Scores = calculateBFI2Scores();
       const animalType = determineAnimalType(bfi2Scores);
@@ -757,10 +955,20 @@
       // 准备完整数据
       const testData = {
         userInfo: userInfo,
+        questionnaireVersion: questionnaireVersion ? questionnaireVersion.version : 'unknown',
+        testMode: testMode,
+        durationSeconds: userInfo.durationSeconds,
         behaviorAnswers: {},
         bfi2Answers: {},
         bfi2Scores: bfi2Scores,
-        animalType: animalType
+        userTraits: animalType.userTraits,  // 用户特征（high/mid/low）
+        animalType: {
+          name: animalType.name,
+          tagline: animalType.tagline,
+          emoji: animalType.emoji,
+          matchScore: animalType.matchScore
+        },
+        submittedAt: new Date().toISOString()
       };
 
       // 分离行为测试和BFI-2答案
