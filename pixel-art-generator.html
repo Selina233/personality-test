@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>动物像素画生成器</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    .controls {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .controls button {
+      padding: 12px 24px;
+      font-size: 16px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    .controls button:hover {
+      background: #45a049;
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .card h3 {
+      margin: 10px 0;
+      font-size: 16px;
+      color: #333;
+    }
+
+    .pixel-art {
+      margin: 10px auto;
+    }
+
+    .download-btn {
+      margin-top: 10px;
+      padding: 8px 16px;
+      background: #2196F3;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .download-btn:hover {
+      background: #1976D2;
+    }
+
+    .info {
+      margin-top: 20px;
+      padding: 15px;
+      background: #E3F2FD;
+      border-left: 4px solid #2196F3;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎨 动物像素画生成器</h1>
+
+  <div class="controls">
+    <button onclick="generateAll()">生成所有动物像素画</button>
+    <button onclick="downloadAllSVG()">下载所有 SVG</button>
+    <button onclick="downloadAllPNG()">下载所有 PNG</button>
+    <div class="info">
+      <strong>说明：</strong>点击"生成所有动物像素画"按钮，系统会为每种动物自动生成独特的像素画。
+      你可以单独下载每个 SVG，或者批量下载所有图片。
+    </div>
+  </div>
+
+  <div class="gallery" id="gallery"></div>
+
+  <script>
+    // 动物数据
+    const animals = [
+      { name: "深海概率灯塔水母", traits: {"O":"high","E":"low","C":"low","A":"high","N":"low"} },
+      { name: "拟态社交蓝环章鱼", traits: {"O":"high","E":"high","C":"high","A":"low","N":"low"} },
+      { name: "记忆反刍驯鹿", traits: {"O":"low","E":"low","C":"high","A":"high","N":"high"} },
+      { name: "结构寄生管虫", traits: {"O":"low","E":"low","C":"high","A":"low","N":"low"} },
+      { name: "情绪共振北极狼", traits: {"O":"high","E":"high","C":"low","A":"high","N":"high"} },
+      { name: "惊跳反应小羚羊", traits: {"O":"low","E":"high","C":"high","A":"low","N":"high"} },
+      { name: "瞬时绽放凤尾蝶", traits: {"O":"high","E":"high","C":"low","A":"high","N":"low"} },
+      { name: "织网结构黑寡妇", traits: {"O":"low","E":"low","C":"high","A":"low","N":"high"} },
+      { name: "码头哲学信天翁", traits: {"O":"high","E":"high","C":"low","A":"low","N":"low"} },
+      { name: "冷血航行虎鲸", traits: {"O":"low","E":"high","C":"high","A":"low","N":"low"} },
+      { name: "快乐扩散海獭", traits: {"O":"low","E":"high","C":"low","A":"high","N":"low"} },
+      { name: "透明情绪玻璃鱼", traits: {"O":"high","E":"low","C":"low","A":"high","N":"high"} },
+      { name: "深海信息抹香鲸", traits: {"O":"high","E":"low","C":"high","A":"low","N":"low"} },
+      { name: "边界消融海月水母", traits: {"O":"high","E":"low","C":"low","A":"high","N":"high"} },
+      { name: "现实耐受蟑螂王", traits: {"O":"low","E":"low","C":"low","A":"low","N":"low"} },
+      { name: "风暴预感雨燕", traits: {"O":"low","E":"high","C":"low","A":"low","N":"high"} },
+      { name: "秩序筑巢角雕", traits: {"O":"low","E":"high","C":"high","A":"high","N":"low"} },
+      { name: "孤岛进化腔棘鱼", traits: {"O":"low","E":"low","C":"low","A":"low","N":"low"} },
+      { name: "群体导航帝企鹅", traits: {"O":"low","E":"low","C":"high","A":"high","N":"low"} },
+      { name: "幻觉捕食螳螂虾", traits: {"O":"high","E":"low","C":"high","A":"low","N":"high"} },
+      { name: "即时情绪火烈鸟", traits: {"O":"low","E":"high","C":"low","A":"high","N":"high"} },
+      { name: "静默蓄能豹猫", traits: {"O":"high","E":"low","C":"high","A":"low","N":"low"} },
+      { name: "意义过载白鲸", traits: {"O":"high","E":"high","C":"low","A":"high","N":"high"} },
+      { name: "边缘试探鬣狗", traits: {"O":"low","E":"high","C":"low","A":"low","N":"low"} },
+      { name: "深层共振海参", traits: {"O":"low","E":"low","C":"low","A":"high","N":"high"} },
+      { name: "路径依赖骆驼蛛", traits: {"O":"low","E":"low","C":"high","A":"low","N":"low"} },
+      { name: "高空观测秃鹫", traits: {"O":"high","E":"low","C":"low","A":"low","N":"low"} },
+      { name: "碎片收集寄居蟹", traits: {"O":"high","E":"low","C":"low","A":"high","N":"low"} },
+      { name: "规则温顺水豚", traits: {"O":"low","E":"high","C":"low","A":"high","N":"low"} },
+      { name: "压力转化独角鲸", traits: {"O":"high","E":"low","C":"high","A":"high","N":"high"} },
+      { name: "随机跃迁飞鱼", traits: {"O":"high","E":"high","C":"low","A":"low","N":"low"} }
+    ];
+
+    // 根据特征生成颜色方案
+    function getColorScheme(traits) {
+      const colors = {
+        primary: '#000000',
+        secondary: '#666666',
+        accent: '#999999',
+        background: 'transparent'
+      };
+
+      // 根据特征组合生成独特配色
+      if (traits.O === 'high') {
+        colors.primary = '#4A90E2'; // 开放性：蓝色
+      }
+      if (traits.E === 'high') {
+        colors.secondary = '#F5A623'; // 外向性：橙色
+      }
+      if (traits.C === 'high') {
+        colors.accent = '#7ED321'; // 尽责性：绿色
+      }
+      if (traits.A === 'high') {
+        colors.primary = '#BD10E0'; // 宜人性：紫色
+      }
+      if (traits.N === 'high') {
+        colors.secondary = '#E94B3C'; // 负性情绪：红色
+      }
+
+      return colors;
+    }
+
+    // 生成像素画图案
+    function generatePixelPattern(name, traits) {
+      const size = 16; // 16x16 像素网格
+      const pixelSize = 10;
+      const colors = getColorScheme(traits);
+
+      // 使用名称生成伪随机种子
+      const seed = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+
+      // 简单的伪随机函数
+      let random = seed;
+      function pseudoRandom() {
+        random = (random * 9301 + 49297) % 233280;
+        return random / 233280;
+      }
+
+      // 生成对称图案
+      const pattern = [];
+      for (let y = 0; y < size; y++) {
+        const row = [];
+        for (let x = 0; x < size / 2; x++) {
+          const threshold = 0.4 + (Math.abs(x - size/4) + Math.abs(y - size/2)) / size * 0.3;
+          row.push(pseudoRandom() > threshold ? 1 : 0);
+        }
+        // 镜像对称
+        pattern.push([...row, ...row.reverse()]);
+      }
+
+      // 生成 SVG
+      let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size * pixelSize}" height="${size * pixelSize}" viewBox="0 0 ${size * pixelSize} ${size * pixelSize}">`;
+
+      // 背景
+      svg += `<rect width="${size * pixelSize}" height="${size * pixelSize}" fill="${colors.background}"/>`;
+
+      // 绘制像素
+      for (let y = 0; y < size; y++) {
+        for (let x = 0; x < size; x++) {
+          if (pattern[y][x]) {
+            const distance = Math.sqrt(Math.pow(x - size/2, 2) + Math.pow(y - size/2, 2));
+            let color;
+
+            if (distance < size * 0.2) {
+              color = colors.primary;
+            } else if (distance < size * 0.4) {
+              color = colors.secondary;
+            } else {
+              color = colors.accent;
+            }
+
+            svg += `<rect x="${x * pixelSize}" y="${y * pixelSize}" width="${pixelSize}" height="${pixelSize}" fill="${color}"/>`;
+          }
+        }
+      }
+
+      svg += '</svg>';
+      return svg;
+    }
+
+    // 生成所有动物
+    function generateAll() {
+      const gallery = document.getElementById('gallery');
+      gallery.innerHTML = '';
+
+      animals.forEach(animal => {
+        const svg = generatePixelPattern(animal.name, animal.traits);
+
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="pixel-art">${svg}</div>
+          <h3>${animal.name}</h3>
+          <button class="download-btn" onclick="downloadSVG('${animal.name}')">下载 SVG</button>
+        `;
+
+        gallery.appendChild(card);
+      });
+    }
+
+    // 下载单个 SVG
+    function downloadSVG(name) {
+      const animal = animals.find(a => a.name === name);
+      const svg = generatePixelPattern(name, animal.traits);
+
+      const blob = new Blob([svg], { type: 'image/svg+xml' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${name}.svg`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // 批量下载所有 SVG
+    async function downloadAllSVG() {
+      for (const animal of animals) {
+        const svg = generatePixelPattern(animal.name, animal.traits);
+        const blob = new Blob([svg], { type: 'image/svg+xml' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${animal.name}.svg`;
+        a.click();
+        URL.revokeObjectURL(url);
+
+        // 延迟避免浏览器阻止下载
+        await new Promise(resolve => setTimeout(resolve, 200));
+      }
+
+      alert('所有 SVG 文件已开始下载！');
+    }
+
+    // 转换为 PNG 并下载
+    async function downloadAllPNG() {
+      for (const animal of animals) {
+        const svg = generatePixelPattern(animal.name, animal.traits);
+
+        // 创建临时 img 元素
+        const img = new Image();
+        const blob = new Blob([svg], { type: 'image/svg+xml' });
+        const url = URL.createObjectURL(blob);
+
+        img.onload = function() {
+          const canvas = document.createElement('canvas');
+          canvas.width = 160;
+          canvas.height = 160;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+
+          canvas.toBlob(function(blob) {
+            const pngUrl = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = pngUrl;
+            a.download = `${animal.name}.png`;
+            a.click();
+            URL.revokeObjectURL(pngUrl);
+          });
+
+          URL.revokeObjectURL(url);
+        };
+
+        img.src = url;
+
+        await new Promise(resolve => setTimeout(resolve, 300));
+      }
+
+      alert('所有 PNG 文件已开始下载！');
+    }
+
+    // 页面加载时自动生成
+    window.onload = generateAll;
+  </script>
+</body>
+</html>

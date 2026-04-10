@@ -362,6 +362,31 @@
   <script>
     // ===== 数据定义 =====
 
+    // 动物类型数据库（从外部JSON加载）
+    let animalDatabase = [];
+
+    // 加载动物数据库
+    fetch('animal-database.json')
+      .then(response => response.json())
+      .then(data => {
+        animalDatabase = data;
+        console.log(`已加载 ${animalDatabase.length} 种动物类型`);
+      })
+      .catch(error => {
+        console.error('加载动物数据库失败:', error);
+        // 降级方案：使用默认数据
+        animalDatabase = [{
+          name: '宇宙终极小猫咪',
+          tagline: '喵~',
+          emoji: '🐱',
+          image: '',
+          traits: {O:'high',E:'high',C:'high',A:'high',N:'high'},
+          description: '你就是猫猫！',
+          strength: '全能与可爱',
+          weakness: '无法预测'
+        }];
+      });
+
     // 行为测试题目（测试版：只保留2道题）
     const behaviorQuestions = [
       { id: 'b1', text: '在过去一周内，你花在社交活动上的时间大约是：_____ 小时', placeholder: '请输入数字' },
@@ -632,28 +657,52 @@
     }
 
     function determineAnimalType(scores) {
-      // 这里是占位符逻辑，你可以后续完善
-      // 示例：根据最高分维度映射动物
-      const animals = {
-        'E': { emoji: '🦁', name: '社交狮子', desc: '外向性突出，喜欢与人交往，充满活力和领导力' },
-        'A': { emoji: '🐼', name: '和善熊猫', desc: '宜人性突出，善良友好，乐于助人，团队协作能力强' },
-        'C': { emoji: '🦉', name: '严谨猫头鹰', desc: '尽责性突出，做事有条理，可靠负责，追求完美' },
-        'N': { emoji: '🐱', name: '敏感猫咪', desc: '情绪敏感，善于感知细微变化，富有同理心' },
-        'O': { emoji: '🦄', name: '创意独角兽', desc: '开放性突出，富有创造力和想象力，喜欢探索新事物' }
-      };
-
-      // 找出得分最高的维度
-      let maxDim = 'E';
-      let maxScore = parseFloat(scores['E']);
-
-      for (const dim in scores) {
-        if (parseFloat(scores[dim]) > maxScore) {
-          maxScore = parseFloat(scores[dim]);
-          maxDim = dim;
-        }
+      // 计算特征匹配度
+      function getTraitValue(value) {
+        if (value >= 4) return 'high';
+        if (value <= 2) return 'low';
+        return 'mid';
       }
 
-      return animals[maxDim];
+      const userTraits = {
+        O: getTraitValue(parseFloat(scores.O)),
+        E: getTraitValue(parseFloat(scores.E)),
+        C: getTraitValue(parseFloat(scores.C)),
+        A: getTraitValue(parseFloat(scores.A)),
+        N: getTraitValue(parseFloat(scores.N))
+      };
+
+      // 找最匹配的动物
+      let bestMatch = animalDatabase[0];
+      let maxScore = -1;
+
+      animalDatabase.forEach(animal => {
+        let matchScore = 0;
+
+        // 计算匹配度
+        for (const trait in userTraits) {
+          if (userTraits[trait] === animal.traits[trait]) {
+            matchScore += 2; // 完全匹配
+          } else if (userTraits[trait] === 'mid') {
+            matchScore += 1; // 中等值容错
+          }
+        }
+
+        if (matchScore > maxScore) {
+          maxScore = matchScore;
+          bestMatch = animal;
+        }
+      });
+
+      return {
+        name: bestMatch.name,
+        tagline: bestMatch.tagline,
+        emoji: bestMatch.emoji,
+        image: bestMatch.image,
+        desc: bestMatch.description,
+        strength: bestMatch.strength,
+        weakness: bestMatch.weakness
+      };
     }
 
     function displayResults(scores, animal) {
@@ -665,9 +714,24 @@
         'O': '开放性 (Open-Mindedness)'
       };
 
-      document.getElementById('animal-emoji').textContent = animal.emoji;
+      // 显示动物图片
+      const animalEmoji = document.getElementById('animal-emoji');
+      if (animal.image) {
+        animalEmoji.innerHTML = `<img src="${animal.image}" alt="${animal.name}" style="width:120px;height:120px;border-radius:12px;">`;
+      } else {
+        animalEmoji.textContent = animal.emoji;
+      }
+
       document.getElementById('animal-name').textContent = animal.name;
-      document.getElementById('animal-desc').textContent = animal.desc;
+
+      // 显示tagline和详细描述
+      const animalDescElement = document.getElementById('animal-desc');
+      animalDescElement.innerHTML = `
+        <p style="font-style:italic;font-size:18px;margin-bottom:16px;color:#555;">"${animal.tagline}"</p>
+        <p style="line-height:1.8;margin-bottom:12px;">${animal.desc}</p>
+        <p style="color:#4d6a53;"><strong>✨ 优势：</strong>${animal.strength}</p>
+        <p style="color:#c56c5c;"><strong>⚠️ 潜在挑战：</strong>${animal.weakness}</p>
+      `;
 
       const scoresGrid = document.getElementById('scores-grid');
       scoresGrid.innerHTML = '';
