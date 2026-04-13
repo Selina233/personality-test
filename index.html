@@ -819,23 +819,18 @@
     }
 
     function determineAnimalType(scores) {
-      // 根据常模计算特征值
+      // 根据常模计算特征值 - 严格二分法：只有 high 或 low
       function getTraitValue(dim, score) {
         if (!bfi2Norms || !bfi2Norms.norms[dim]) {
           // 降级方案：使用简单阈值
-          if (score >= 4) return 'high';
-          if (score <= 2) return 'low';
-          return 'mid';
+          return score >= 3 ? 'high' : 'low';
         }
 
         const norm = bfi2Norms.norms[dim];
         const mean = norm.mean;
-        const std = norm.std;
 
-        // 使用0.5个标准差作为阈值
-        if (score > mean + 0.5 * std) return 'high';
-        if (score < mean - 0.5 * std) return 'low';
-        return 'mid';
+        // 严格二分：大于等于均值为 high，小于均值为 low
+        return score >= mean ? 'high' : 'low';
       }
 
       const userTraits = {
@@ -846,27 +841,29 @@
         N: getTraitValue('N', parseFloat(scores.N))
       };
 
-      // 找最匹配的动物
-      let bestMatch = animalDatabase[0];
-      let maxScore = -1;
+      // 严格匹配：找完全匹配的动物（32种动物对应 2^5 = 32 种组合）
+      let bestMatch = null;
 
       animalDatabase.forEach(animal => {
-        let matchScore = 0;
-
-        // 计算匹配度
+        // 检查是否完全匹配
+        let isMatch = true;
         for (const trait in userTraits) {
-          if (userTraits[trait] === animal.traits[trait]) {
-            matchScore += 2; // 完全匹配
-          } else if (userTraits[trait] === 'mid') {
-            matchScore += 1; // 中等值容错
+          if (userTraits[trait] !== animal.traits[trait]) {
+            isMatch = false;
+            break;
           }
         }
 
-        if (matchScore > maxScore) {
-          maxScore = matchScore;
+        if (isMatch) {
           bestMatch = animal;
         }
       });
+
+      // 如果没找到完全匹配（理论上不应该发生），返回第一个作为降级方案
+      if (!bestMatch) {
+        console.warn('未找到完全匹配的动物，使用降级方案');
+        bestMatch = animalDatabase[0];
+      }
 
       return {
         name: bestMatch.name,
@@ -876,7 +873,6 @@
         desc: bestMatch.description,
         strength: bestMatch.strength,
         weakness: bestMatch.weakness,
-        matchScore: maxScore,
         userTraits: userTraits  // 保存用户特征用于数据分析
       };
     }
@@ -896,13 +892,9 @@
       document.getElementById('test-duration').textContent =
         `${minutes}分${seconds}秒`;
 
-      // 显示动物图片
+      // 显示动物图片 - 直接使用emoji以兼容iOS
       const animalEmoji = document.getElementById('animal-emoji');
-      if (animal.image) {
-        animalEmoji.innerHTML = `<img src="${animal.image}" alt="${animal.name}" style="width:120px;height:120px;border-radius:12px;">`;
-      } else {
-        animalEmoji.textContent = animal.emoji;
-      }
+      animalEmoji.textContent = animal.emoji;
 
       document.getElementById('animal-name').textContent = animal.name;
 
@@ -922,20 +914,17 @@
         const scoreDiv = document.createElement('div');
         scoreDiv.className = 'score-section';
 
-        // 添加相对常模的标签
+        // 添加相对常模的标签 - 严格二分法
         let normLabel = '';
         if (bfi2Norms && bfi2Norms.norms[dim]) {
           const norm = bfi2Norms.norms[dim];
           const score = parseFloat(scores[dim]);
           const mean = norm.mean;
-          const std = norm.std;
 
-          if (score > mean + 0.5 * std) {
+          if (score >= mean) {
             normLabel = '<span style="color:#4d6a53;font-size:12px;">（高于常模）</span>';
-          } else if (score < mean - 0.5 * std) {
-            normLabel = '<span style="color:#c56c5c;font-size:12px;">（低于常模）</span>';
           } else {
-            normLabel = '<span style="color:#999;font-size:12px;">（接近常模）</span>';
+            normLabel = '<span style="color:#999;font-size:12px;">（低于常模）</span>';
           }
         }
 
@@ -980,6 +969,9 @@
         testData.bfi2Answers[q.id] = answers[q.id];
       });
 
+      // 记录用户填写的问卷版本
+      testData.questionnaireVersion = questionnaireVersion ? questionnaireVersion.version : 'unknown';
+
       // 保存数据到在线表格
       await saveToGoogleSheets(testData);
 
@@ -992,16 +984,7 @@
 
     async function saveToGoogleSheets(data) {
       // 替换为你的 Google Apps Script Web 应用 URL
-      // 部署步骤见 DEPLOY_GUIDE.md
       const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxmrCZwrcaa1x7PBnuMLKsNB4AKP55WqulzQnq_BgFPuJ8B-MZuEtqgoo9Oy3675yuwzw/exec';
-
-      // 如果还没配置 Apps Script URL，提示用户下载数据
-      if (SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_HERE') {
-        console.warn('未配置 Google Apps Script URL，数据将下载到本地');
-        alert('数据存储未配置，测试结果将下载到本地');
-        downloadAsJSON(data);
-        return;
-      }
 
       try {
         // 提交数据到 Google Apps Script
@@ -1017,48 +1000,10 @@
         // 注意：no-cors 模式下无法读取响应，但数据已提交
         console.log('数据已提交到 Google Sheets');
 
-        // 可选：也保存一份到本地
-        // downloadAsJSON(data);
-
       } catch (error) {
-        console.error('保存出错:', error);
-        alert('数据提交失败，将下载到本地');
-        // 降级方案：下载到本地
-        downloadAsJSON(data);
+        console.error('数据提交失败:', error);
+        // 静默失败，不显示给用户
       }
-    }
-
-    function downloadAsJSON(data) {
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `test-result-${data.userInfo.userId}-${Date.now()}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
-    }
-
-    function downloadResults() {
-      const bfi2Scores = calculateBFI2Scores();
-      const animalType = determineAnimalType(bfi2Scores);
-
-      const data = {
-        userInfo: userInfo,
-        behaviorAnswers: {},
-        bfi2Answers: {},
-        bfi2Scores: bfi2Scores,
-        animalType: animalType
-      };
-
-      behaviorQuestions.forEach(q => {
-        data.behaviorAnswers[q.id] = answers[q.id];
-      });
-
-      bfi2Questions.forEach(q => {
-        data.bfi2Answers[q.id] = answers[q.id];
-      });
-
-      downloadAsJSON(data);
     }
   </script>
 </body>
