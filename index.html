@@ -994,12 +994,12 @@
       // 记录用户填写的问卷版本
       testData.questionnaireVersion = questionnaireVersion ? questionnaireVersion.version : 'unknown';
 
-      // 只有研究模式才保存数据到在线表格
+      // 只有研究模式才保存数据到在线表格（后台异步提交，不等待响应）
       if (testMode === 'research') {
-        await saveToGoogleSheets(testData);
+        saveToGoogleSheets(testData); // 不使用 await，让它在后台执行
       }
 
-      // 显示结果
+      // 显示结果（不等待数据保存完成）
       displayResults(bfi2Scores, animalType);
       showScreen('result-screen');
     }
