@@ -994,8 +994,10 @@
       // 记录用户填写的问卷版本
       testData.questionnaireVersion = questionnaireVersion ? questionnaireVersion.version : 'unknown';
 
-      // 保存数据到在线表格
-      await saveToGoogleSheets(testData);
+      // 只有研究模式才保存数据到在线表格
+      if (testMode === 'research') {
+        await saveToGoogleSheets(testData);
+      }
 
       // 显示结果
       displayResults(bfi2Scores, animalType);
