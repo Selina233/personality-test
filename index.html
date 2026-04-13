@@ -994,12 +994,15 @@
       // 记录用户填写的问卷版本
       testData.questionnaireVersion = questionnaireVersion ? questionnaireVersion.version : 'unknown';
 
-      // 只有研究模式才保存数据到在线表格（后台异步提交，不等待响应）
+      // 只有研究模式才保存数据到在线表格
       if (testMode === 'research') {
-        saveToGoogleSheets(testData); // 不使用 await，让它在后台执行
+        // 后台异步提交，不等待响应
+        saveToGoogleSheets(testData);
+        // 给请求 100ms 时间发出（避免用户立刻关闭导致数据丢失）
+        await new Promise(resolve => setTimeout(resolve, 100));
       }
 
-      // 显示结果（不等待数据保存完成）
+      // 显示结果
       displayResults(bfi2Scores, animalType);
       showScreen('result-screen');
     }
@@ -1012,9 +1015,11 @@
 
       try {
         // 提交数据到 Google Apps Script
+        // keepalive: true 确保即使用户关闭页面，请求也会完成
         const response = await fetch(SCRIPT_URL, {
           method: 'POST',
           mode: 'no-cors', // Apps Script 需要 no-cors 模式
+          keepalive: true, // 关键：即使页面关闭也继续发送
           headers: {
             'Content-Type': 'application/json',
           },
