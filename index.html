@@ -310,17 +310,29 @@
 
           <div style="border:2px solid var(--accent);border-radius:12px;padding:20px;margin-bottom:20px;background:#fff;">
             <div style="display:flex;align-items:center;margin-bottom:10px;">
-              <span style="font-size:24px;margin-right:10px;">🔬</span>
-              <h4 style="margin:0;color:var(--accent);">研究模式（推荐）</h4>
+              <span style="font-size:24px;margin-right:10px;">🚀</span>
+              <h4 style="margin:0;color:var(--accent);">研究参与模式（推荐）</h4>
             </div>
             <p style="font-weight:600;margin:5px 0;">深度参与，助力学术研究</p>
             <ul style="line-height:1.8;color:#555;">
-              <li><strong>流程：</strong>完整填写问卷（约 20-25 分钟），获取深度版人格分析报告</li>
-              <li><strong>激励：</strong>参与总额 <span style="color:#e74c3c;font-weight:600;">2000 元</span>的现金抽奖。请留下手机号，中奖后将通过支付宝发放</li>
-              <li><strong>反馈：</strong>可选留邮箱，我们将在一周内为您发送一份专业的人格分析报告</li>
-              <li><strong>注：</strong>您的联系方式仅用于发放奖励和反馈结果，数据将进行匿名化处理，符合伦理规范</li>
+              <li><strong>流程：</strong>完整填写情境实验问题和问卷（约 20-25 分钟）。</li>
+              <li><strong>专属收获：</strong>
+                <ul style="margin-top:8px;margin-bottom:0;">
+                  <li><strong>深度分析报告：</strong>基于完整版量表生成的专业报告。涵盖 15 个性格子维度的精细画像，帮您更透彻地了解自己。</li>
+                  <li><strong>现金抽奖资格：</strong>总额 <span style="color:#e74c3c;font-weight:600;">2000 元</span>的现金奖池。</li>
+                </ul>
+              </li>
+              <li><strong>抽奖说明：</strong>只有通过数据质量检测的认真填写者方可进入抽奖池。</li>
+              <li><strong>奖池配置：</strong>
+                <ul style="margin-top:8px;margin-bottom:0;">
+                  <li>200 元 × 1 名</li>
+                  <li>100 元 × 5 名</li>
+                  <li>50 元 × 26 名</li>
+                </ul>
+              </li>
+              <li><strong>说明：</strong>请留下手机号（仅用于中奖后支付宝发放）与邮箱（用于接收分析报告）。数据已做匿名化处理，请放心填写。</li>
             </ul>
-            <button class="btn" onclick="startTest('research')" style="width:100%;margin-top:10px;">选择研究模式</button>
+            <button class="btn" onclick="startTest('research')" style="width:100%;margin-top:10px;">选择研究参与模式</button>
           </div>
 
           <div style="border:2px solid #ddd;border-radius:12px;padding:20px;background:#f8f9fa;">
@@ -348,11 +360,11 @@
           <label for="user-id">你的ID或昵称（必填）</label>
           <input type="text" id="user-id" placeholder="请输入你的ID或昵称" required>
 
-          <label for="user-email">邮箱（选填）<span id="email-note"></span></label>
+          <label for="user-email">邮箱（选填，用于接收分析报告）</label>
           <input type="email" id="user-email" placeholder="用于接收测试结果">
 
           <div id="phone-field" class="hidden">
-            <label for="user-phone">手机号（研究模式必填，用于抽奖）</label>
+            <label for="user-phone">手机号（选填，用于抽奖奖金发放）</label>
             <input type="tel" id="user-phone" placeholder="请输入11位手机号">
           </div>
         </div>
@@ -375,6 +387,9 @@
           <button class="btn btn-secondary" onclick="previousQuestion()" id="btn-prev">上一题</button>
           <button class="btn" onclick="nextQuestion()" id="btn-next">下一题</button>
         </div>
+        <p id="submit-hint" class="hidden" style="text-align:center;color:var(--muted);font-size:13px;margin-top:12px;">
+          ⏳ 提交后请耐心等候几秒，数据正在保存中...
+        </p>
       </div>
     </div>
 
@@ -441,6 +456,16 @@
 
           <p style="font-size:13px;color:#999;margin-top:20px;border-top:1px solid #ddd;padding-top:15px;">
             注：本测试结果基于BFI-2中国常模（大学生群体，n=1194），"高"、"低"为相对常模而言。
+          </p>
+        </div>
+
+        <div style="margin-top:40px;padding:25px;background:linear-gradient(135deg, #f8fff8 0%, #edf6ef 100%);border-radius:12px;border-left:4px solid var(--accent);">
+          <h2 style="color:var(--accent-strong);margin-top:0;font-size:20px;">✍️ 写在最后的话</h2>
+          <p style="line-height:1.9;color:#555;margin-bottom:15px;">
+            动物人格的诞生，是为了让你在纷繁的世界中看到那个独一无二的影子。它更像是一个<strong>趣味性的坐标</strong>，专业性不强，大家"图一乐"就好。
+          </p>
+          <p style="line-height:1.9;color:#555;margin-bottom:0;">
+            不过，你看到的<strong>大五人格维度分数</strong>是基于专业量表计算得出的，这部分值得你深度参考。人格并没有标准答案，无论你是"蟑螂王"还是"独角兽"，<strong>接纳并理解真实的自己，才是这场测试的最终意义</strong>。
           </p>
         </div>
 
@@ -632,14 +657,11 @@
 
       // 显示/隐藏手机号字段
       const phoneField = document.getElementById('phone-field');
-      const emailNote = document.getElementById('email-note');
 
       if (mode === 'research') {
         phoneField.classList.remove('hidden');
-        emailNote.textContent = ' - 研究模式推荐填写';
       } else {
         phoneField.classList.add('hidden');
-        emailNote.textContent = '';
       }
     }
 
@@ -650,14 +672,10 @@
         return;
       }
 
-      // 研究模式需要手机号
+      // 获取手机号和邮箱（都是选填）
       const phone = document.getElementById('user-phone').value.trim();
-      if (testMode === 'research' && !phone) {
-        alert('研究模式需要填写手机号以参与抽奖');
-        return;
-      }
 
-      // 验证手机号格式
+      // 如果填写了手机号，验证格式
       if (phone && !/^1[3-9]\d{9}$/.test(phone)) {
         alert('请输入有效的11位手机号');
         return;
@@ -745,10 +763,14 @@
       document.getElementById('btn-prev').disabled = currentQuestionIndex === 0;
 
       const nextBtn = document.getElementById('btn-next');
+      const submitHint = document.getElementById('submit-hint');
+
       if (currentQuestionIndex === allQuestions.length - 1) {
         nextBtn.textContent = '提交';
+        submitHint.classList.remove('hidden');
       } else {
         nextBtn.textContent = '下一题';
+        submitHint.classList.add('hidden');
       }
     }
 
