@@ -1,0 +1,28 @@
+{
+  "currentVersion": "v1.0.0",
+  "versions": [
+    {
+      "version": "v1.0.0",
+      "releaseDate": "2026-04-10",
+      "status": "testing",
+      "description": "测试版：2道行为测试+5道BFI-2测试",
+      "totalQuestions": 7,
+      "file": "questionnaire-versions/v1.0.0.json",
+      "isActive": true
+    }
+  ],
+  "metadata": {
+    "lastUpdated": "2026-04-13",
+    "totalVersions": 1,
+    "description": "问卷版本索引文件，记录所有历史版本"
+  },
+  "plannedVersions": [
+    {
+      "version": "v2.0.0",
+      "plannedDate": "2026-04-24",
+      "description": "完整版：30道行为测试+60道BFI-2测试",
+      "totalQuestions": 90,
+      "status": "planned"
+    }
+  ]
+}

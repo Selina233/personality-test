@@ -1,0 +1,72 @@
+{
+  "version": "v1.0.0",
+  "releaseDate": "2026-04-10",
+  "description": "初始版本：2道行为测试+5道BFI-2测试（测试版）",
+  "status": "testing",
+  "questionCounts": {
+    "behavior": 2,
+    "bfi2": 5,
+    "total": 7
+  },
+  "questions": {
+    "behavior": [
+      {
+        "id": "b1",
+        "text": "在过去一周内，你花在社交活动上的时间大约是：_____ 小时",
+        "type": "fill_in_blank",
+        "placeholder": "请输入数字"
+      },
+      {
+        "id": "b2",
+        "text": "你通常每天使用社交媒体的时间是：_____ 小时",
+        "type": "fill_in_blank",
+        "placeholder": "请输入数字"
+      }
+    ],
+    "bfi2": [
+      {
+        "id": "bfi1",
+        "text": "性格外向，喜欢交际",
+        "dimension": "E",
+        "reverse": false
+      },
+      {
+        "id": "bfi2",
+        "text": "心肠柔软，有同情心",
+        "dimension": "A",
+        "reverse": false
+      },
+      {
+        "id": "bfi3",
+        "text": "缺乏条理",
+        "dimension": "C",
+        "reverse": true
+      },
+      {
+        "id": "bfi4",
+        "text": "从容，善于处理压力",
+        "dimension": "N",
+        "reverse": true
+      },
+      {
+        "id": "bfi5",
+        "text": "对艺术没有什么兴趣",
+        "dimension": "O",
+        "reverse": true
+      }
+    ]
+  },
+  "changelog": [
+    {
+      "date": "2026-04-10",
+      "changes": [
+        "初始发布",
+        "包含2道行为测试题",
+        "包含5道BFI-2测试题（每维度各1题）",
+        "基于中国常模的高/低二分判断",
+        "32种动物映射完整覆盖"
+      ]
+    }
+  ],
+  "notes": "此版本仅用于快速测试，完整版将包含30道行为测试题+60道BFI-2题"
+}
