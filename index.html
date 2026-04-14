@@ -710,6 +710,7 @@
       if (mode === 'experience') {
         // 体验模式：30题BFI-2精简版（每个子维度2题）
         allQuestions = [...bfi2QuestionsShort];
+        console.log('✅ 体验模式启动，题目数量:', allQuestions.length);
 
         // 体验模式统计（使用CountAPI，不占用Google Sheet配额）
         fetch('https://api.countapi.xyz/hit/personality-test-selina/experience-mode')
@@ -731,6 +732,7 @@
       } else {
         // 研究模式：完整题目（16道行为测试 + 60道BFI-2）
         allQuestions = [...behaviorQuestions, ...bfi2Questions];
+        console.log('✅ 研究模式启动，题目数量:', allQuestions.length);
         showScreen('user-info-screen');
 
         // 显示手机号字段
@@ -834,7 +836,7 @@
         // 体验模式或研究模式的BFI-2部分
         if (testMode === 'experience') {
           displayIndex = currentQuestionIndex + 1;
-          totalInSection = bfi2Questions.length;
+          totalInSection = allQuestions.length; // 使用实际题目数量（30题）
           section = 'BFI-2人格测试';
         } else {
           displayIndex = currentQuestionIndex - behaviorQuestions.length + 1;
