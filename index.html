@@ -1310,6 +1310,10 @@
       // 分离行为测试和BFI-2答案
       behaviorQuestions.forEach(q => {
         testData.behaviorAnswers[q.id] = answers[q.id];
+        // 保存追问答案（如果有）
+        if (q.followup && answers[q.id + '_followup']) {
+          testData.behaviorAnswers[q.id + '_followup'] = answers[q.id + '_followup'];
+        }
       });
 
       bfi2Questions.forEach(q => {
