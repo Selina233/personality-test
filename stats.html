@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>体验模式统计 - 人格测试</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      border-radius: 16px;
+      padding: 40px;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, #6c8d71 0%, #4d6a53 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .stat-label {
+      font-size: 14px;
+      opacity: 0.9;
+      margin-bottom: 10px;
+    }
+
+    .stat-value {
+      font-size: 48px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .stat-subtitle {
+      font-size: 12px;
+      opacity: 0.8;
+    }
+
+    .info {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #666;
+      line-height: 1.6;
+    }
+
+    .btn {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 12px 24px;
+      background: #6c8d71;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: transform 0.2s;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .loading {
+      text-align: center;
+      color: #999;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📊 体验模式统计</h1>
+
+    <div class="stat-card">
+      <div class="stat-label">体验模式完成人数</div>
+      <div class="stat-value" id="count">-</div>
+      <div class="stat-subtitle">自启用统计以来</div>
+    </div>
+
+    <div class="info">
+      <p><strong>📝 说明：</strong></p>
+      <ul style="margin-top:10px; margin-left:20px;">
+        <li>此统计仅记录体验模式的访问次数</li>
+        <li>使用免费的CountAPI服务，不占用Google Sheet配额</li>
+        <li>数据实时更新，无需刷新页面</li>
+        <li>体验模式不收集用户信息，完全匿名</li>
+      </ul>
+    </div>
+
+    <div style="text-align:center;">
+      <a href="index.html" class="btn">返回测试页面</a>
+    </div>
+  </div>
+
+  <script>
+    // 加载统计数据
+    function loadStats() {
+      document.getElementById('count').innerHTML = '<span class="loading">加载中...</span>';
+
+      fetch('https://api.countapi.xyz/get/personality-test-selina/experience-mode')
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById('count').textContent = data.value.toLocaleString();
+        })
+        .catch(err => {
+          console.error('加载统计失败:', err);
+          document.getElementById('count').textContent = '加载失败';
+        });
+    }
+
+    // 页面加载时获取统计
+    loadStats();
+
+    // 每30秒自动刷新
+    setInterval(loadStats, 30000);
+  </script>
+</body>
+</html>
