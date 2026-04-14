@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>人格与行为测试</title>
+  <script src="behavior-questions.js"></script>
   <style>
     :root {
       --bg: #f6faf6;
@@ -175,6 +176,81 @@
     .input-text:focus {
       outline: none;
       border-color: var(--accent);
+    }
+
+    .input-textarea {
+      width: 100%;
+      padding: 14px 18px;
+      font-size: 16px;
+      border: 2px solid var(--line);
+      border-radius: 12px;
+      font-family: inherit;
+      transition: border-color 0.2s;
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    .input-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .three-phase-input {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .phase-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .phase-item label {
+      flex: 0 0 200px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .phase-input {
+      width: 120px;
+      padding: 10px 14px;
+      font-size: 16px;
+      border: 2px solid var(--line);
+      border-radius: 8px;
+      font-family: inherit;
+      transition: border-color 0.2s;
+    }
+
+    .phase-input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .sum-display {
+      margin-top: 10px;
+      padding: 12px 18px;
+      background: var(--soft);
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .followup-section {
+      animation: fadeIn 0.3s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .navigation {
@@ -483,23 +559,26 @@
     let animalDatabase = [];
     let bfi2Norms = null;
     let questionnaireVersion = null;
+    // behaviorQuestions 从 behavior-questions.js 加载
 
     // 加载动物数据库
     fetch('animal-database.json')
       .then(response => response.json())
       .then(data => {
         animalDatabase = data;
-        console.log(`已加载 ${animalDatabase.length} 种动物类型`);
+        console.log(`✅ 已加载 ${animalDatabase.length} 种动物类型`);
       })
       .catch(error => {
-        console.error('加载动物数据库失败:', error);
+        console.error('❌ 加载动物数据库失败:', error);
+        console.error('❌ 请使用HTTP服务器访问本页面，不要直接打开HTML文件！');
+        alert('⚠️ 动物数据库加载失败！\n\n请使用以下方式访问：\n1. 使用本地HTTP服务器（如：python3 -m http.server）\n2. 或部署到GitHub Pages等平台\n\n直接打开HTML文件会导致CORS错误！');
         animalDatabase = [{
           name: '宇宙终极小猫咪',
           tagline: '喵~',
           emoji: '🐱',
           image: '',
           traits: {O:'high',E:'high',C:'high',A:'high',N:'high'},
-          description: '你就是猫猫！',
+          description: '你就是猫猫！（数据加载失败）',
           strength: '全能与可爱',
           weakness: '无法预测'
         }];
@@ -527,52 +606,13 @@
         console.error('加载问卷版本失败:', error);
       });
 
-    // 行为测试题目（测试版：只保留2道题）
-    const behaviorQuestions = [
-      { id: 'b1', text: '在过去一周内，你花在社交活动上的时间大约是：_____ 小时', placeholder: '请输入数字' },
-      { id: 'b2', text: '你通常每天使用社交媒体的时间是：_____ 小时', placeholder: '请输入数字' }
-      /* 完整版题目（取消注释以启用所有30道题）
-      ,
-      { id: 'b3', text: '你每周运动的次数是：_____ 次', placeholder: '请输入数字' },
-      { id: 'b4', text: '你每晚平均睡眠时间是：_____ 小时', placeholder: '请输入数字' },
-      { id: 'b5', text: '你每天阅读（书籍/文章）的时间是：_____ 分钟', placeholder: '请输入数字' },
-      { id: 'b6', text: '你每周参加团体活动的次数是：_____ 次', placeholder: '请输入数字' },
-      { id: 'b7', text: '你通常在工作/学习上花费：_____ 小时/天', placeholder: '请输入数字' },
-      { id: 'b8', text: '你每周与朋友见面的次数是：_____ 次', placeholder: '请输入数字' },
-      { id: 'b9', text: '你每天花在娱乐（游戏/电影等）上的时间是：_____ 小时', placeholder: '请输入数字' },
-      { id: 'b10', text: '你每周尝试新事物（新餐厅/新活动等）的次数是：_____ 次', placeholder: '请输入数字' },
-      { id: 'b11', text: '你每天独处的时间大约是：_____ 小时', placeholder: '请输入数字' },
-      { id: 'b12', text: '你每周参与志愿活动或帮助他人的时间是：_____ 小时', placeholder: '请输入数字' },
-      { id: 'b13', text: '你每天计划和安排任务的时间是：_____ 分钟', placeholder: '请输入数字' },
-      { id: 'b14', text: '你每周感到压力或焦虑的天数是：_____ 天', placeholder: '请输入数字' },
-      { id: 'b15', text: '你每月参观博物馆/画展等艺术活动的次数是：_____ 次', placeholder: '请输入数字' },
-      { id: 'b16', text: '你每天与家人交流的时间是：_____ 分钟', placeholder: '请输入数字' },
-      { id: 'b17', text: '你每周完成待办事项的比例是：_____ %', placeholder: '请输入0-100的数字' },
-      { id: 'b18', text: '你每天思考人生意义/哲学问题的时间是：_____ 分钟', placeholder: '请输入数字' },
-      { id: 'b19', text: '你每周拖延任务的次数是：_____ 次', placeholder: '请输入数字' },
-      { id: 'b20', text: '你每天听音乐的时间是：_____ 小时', placeholder: '请输入数字' },
-      { id: 'b21', text: '你每周主动发起社交活动的次数是：_____ 次', placeholder: '请输入数字' },
-      { id: 'b22', text: '你每天冥想或放松的时间是：_____ 分钟', placeholder: '请输入数字' },
-      { id: 'b23', text: '你每周学习新技能或知识的时间是：_____ 小时', placeholder: '请输入数字' },
-      { id: 'b24', text: '你每天整理房间/工作区域的时间是：_____ 分钟', placeholder: '请输入数字' },
-      { id: 'b25', text: '你每周感到快乐或满足的天数是：_____ 天', placeholder: '请输入数字' },
-      { id: 'b26', text: '你每天写作（日记/博客/创作）的时间是：_____ 分钟', placeholder: '请输入数字' },
-      { id: 'b27', text: '你每周与陌生人交谈的次数是：_____ 次', placeholder: '请输入数字' },
-      { id: 'b28', text: '你每天做决策（大小决策）的次数是：_____ 次', placeholder: '请输入数字' },
-      { id: 'b29', text: '你每周参与竞争性活动（比赛/辩论等）的次数是：_____ 次', placeholder: '请输入数字' },
-      { id: 'b30', text: '你每天感恩或积极思考的时间是：_____ 分钟', placeholder: '请输入数字' }
-      */
-    ];
-
     // BFI-2 题目（测试版：只保留5道题，每个维度各1题）
     const bfi2Questions = [
       { id: 'bfi1', text: '性格外向，喜欢交际', dim: 'E', reverse: false },
       { id: 'bfi2', text: '心肠柔软，有同情心', dim: 'A', reverse: false },
       { id: 'bfi3', text: '缺乏条理', dim: 'C', reverse: true },
       { id: 'bfi4', text: '从容，善于处理压力', dim: 'N', reverse: true },
-      { id: 'bfi5', text: '对艺术没有什么兴趣', dim: 'O', reverse: true }
-      /* 完整版题目（取消注释以启用所有60道题）
-      ,
+      { id: 'bfi5', text: '对艺术没有什么兴趣', dim: 'O', reverse: true },
       { id: 'bfi6', text: '性格坚定自信，敢于表达自己的观点', dim: 'E', reverse: false },
       { id: 'bfi7', text: '为人恭谦，尊重他人', dim: 'A', reverse: false },
       { id: 'bfi8', text: '比较懒', dim: 'C', reverse: true },
@@ -628,7 +668,6 @@
       { id: 'bfi58', text: '有时候会做出一些不负责任的行为', dim: 'C', reverse: true },
       { id: 'bfi59', text: '情绪多变，容易愤怒', dim: 'N', reverse: false },
       { id: 'bfi60', text: '有创意，能想出新点子', dim: 'O', reverse: false }
-      */
     ];
 
     // 合并所有题目
@@ -714,15 +753,95 @@
       const contentDiv = document.getElementById('question-content');
 
       if (isBehavior) {
-        // 填空题
-        contentDiv.innerHTML = `
-          <input type="text" class="input-text" id="answer-input"
-                 placeholder="${question.placeholder}"
-                 value="${answers[question.id] || ''}"
-                 oninput="saveAnswer()">
-        `;
+        // 行为测试题 - 根据inputType渲染不同的输入方式
+        let inputHTML = '';
+
+        if (question.inputType === 'number') {
+          // 数字输入 (0-99)
+          inputHTML = `
+            <input type="number" class="input-text" id="answer-input"
+                   min="0" max="99" step="1"
+                   placeholder="${question.placeholder}"
+                   value="${answers[question.id] || ''}"
+                   oninput="saveAnswer()">
+          `;
+        } else if (question.inputType === 'textarea') {
+          // 多行文本输入
+          inputHTML = `
+            <textarea class="input-textarea" id="answer-input" rows="8"
+                      placeholder="${question.placeholder}"
+                      oninput="saveAnswer()">${answers[question.id] || ''}</textarea>
+          `;
+        } else if (question.inputType === 'text') {
+          // 单行文本输入
+          inputHTML = `
+            <input type="text" class="input-text" id="answer-input"
+                   placeholder="${question.placeholder}"
+                   value="${answers[question.id] || ''}"
+                   oninput="saveAnswer()">
+          `;
+        } else if (question.inputType === 'three_phase') {
+          // 三阶段输入 (Question 8)
+          const saved = answers[question.id] ? JSON.parse(answers[question.id]) : {phase1: '', phase2: '', phase3: ''};
+          inputHTML = `
+            <div class="three-phase-input">
+              <div class="phase-item">
+                <label>第 1 天 - 第 10 天（初期）：</label>
+                <input type="number" class="phase-input" id="phase1-input"
+                       min="0" max="99" step="1"
+                       placeholder="0-99"
+                       value="${saved.phase1}"
+                       oninput="saveThreePhaseAnswer()">
+                <span>个令牌</span>
+              </div>
+              <div class="phase-item">
+                <label>第 11 天 - 第 20 天（中期）：</label>
+                <input type="number" class="phase-input" id="phase2-input"
+                       min="0" max="99" step="1"
+                       placeholder="0-99"
+                       value="${saved.phase2}"
+                       oninput="saveThreePhaseAnswer()">
+                <span>个令牌</span>
+              </div>
+              <div class="phase-item">
+                <label>第 21 天 - 第 30 天（冲刺期）：</label>
+                <input type="number" class="phase-input" id="phase3-input"
+                       min="0" max="99" step="1"
+                       placeholder="0-99"
+                       value="${saved.phase3}"
+                       oninput="saveThreePhaseAnswer()">
+                <span>个令牌</span>
+              </div>
+              <div class="sum-display" id="sum-display">
+                总和：<span id="sum-value">0</span> / 99
+              </div>
+            </div>
+          `;
+        }
+
+        // 渲染追问题（一开始就显示）
+        let followupHTML = '';
+        if (question.followup) {
+          followupHTML = `
+            <div class="followup-section" style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #e0e0e0;">
+              <div class="followup-label" style="font-weight: 600; margin-bottom: 10px;">📝 追问：</div>
+              <div class="followup-text" style="margin-bottom: 15px; line-height: 1.6;">${question.followup}</div>
+              <textarea class="input-textarea" id="followup-input" rows="5"
+                        placeholder="${question.followupPlaceholder}"
+                        oninput="saveFollowupAnswer()">${answers[question.id + '_followup'] || ''}</textarea>
+            </div>
+          `;
+        }
+
+        contentDiv.innerHTML = inputHTML + followupHTML;
+
+        // 如果是三阶段输入，立即更新总和显示
+        if (question.inputType === 'three_phase') {
+          setTimeout(updateThreePhaseSum, 0);
+        }
+
       } else {
-        // 选择题
+        // BFI-2选择题
         const options = [
           { label: '非常不同意', value: 1 },
           { label: '不太同意', value: 2 },
@@ -750,7 +869,53 @@
     function saveAnswer() {
       const question = allQuestions[currentQuestionIndex];
       const input = document.getElementById('answer-input');
-      answers[question.id] = input.value.trim();
+      if (input) {
+        answers[question.id] = input.value.trim();
+      }
+    }
+
+    function saveFollowupAnswer() {
+      const question = allQuestions[currentQuestionIndex];
+      const followupInput = document.getElementById('followup-input');
+      if (followupInput) {
+        answers[question.id + '_followup'] = followupInput.value.trim();
+      }
+    }
+
+    function saveThreePhaseAnswer() {
+      const question = allQuestions[currentQuestionIndex];
+      const phase1 = document.getElementById('phase1-input').value;
+      const phase2 = document.getElementById('phase2-input').value;
+      const phase3 = document.getElementById('phase3-input').value;
+
+      answers[question.id] = JSON.stringify({
+        phase1: phase1,
+        phase2: phase2,
+        phase3: phase3
+      });
+
+      updateThreePhaseSum();
+    }
+
+    function updateThreePhaseSum() {
+      const phase1 = parseInt(document.getElementById('phase1-input').value) || 0;
+      const phase2 = parseInt(document.getElementById('phase2-input').value) || 0;
+      const phase3 = parseInt(document.getElementById('phase3-input').value) || 0;
+      const sum = phase1 + phase2 + phase3;
+
+      const sumValue = document.getElementById('sum-value');
+      const sumDisplay = document.getElementById('sum-display');
+
+      if (sumValue) {
+        sumValue.textContent = sum;
+        if (sum === 99) {
+          sumDisplay.style.color = '#27ae60';
+          sumDisplay.style.fontWeight = '600';
+        } else {
+          sumDisplay.style.color = '#e74c3c';
+          sumDisplay.style.fontWeight = '600';
+        }
+      }
     }
 
     function selectOption(value) {
@@ -776,6 +941,14 @@
 
     function previousQuestion() {
       if (currentQuestionIndex > 0) {
+        const currentQuestion = allQuestions[currentQuestionIndex];
+
+        // 如果当前是bq7_followup，禁止返回上一题（防止偷看清单）
+        if (currentQuestion.id === 'bq7_followup') {
+          alert('⚠️ 为保证测试有效性，此题不允许返回查看上一题的清单。请凭记忆作答。');
+          return;
+        }
+
         currentQuestionIndex--;
         renderQuestion();
       }
@@ -788,6 +961,26 @@
       if (!answers[question.id]) {
         alert('请先回答当前问题');
         return;
+      }
+
+      // 行为测试题的额外验证
+      const isBehavior = currentQuestionIndex < behaviorQuestions.length;
+      if (isBehavior) {
+        // 检查追问是否已回答（除了bq7，因为它的追问已经是独立题目）
+        if (question.followup && question.id !== 'bq7' && !answers[question.id + '_followup']) {
+          alert('请回答下方的追问题');
+          return;
+        }
+
+        // 检查三阶段输入的总和是否等于99
+        if (question.inputType === 'three_phase') {
+          const data = JSON.parse(answers[question.id]);
+          const sum = (parseInt(data.phase1) || 0) + (parseInt(data.phase2) || 0) + (parseInt(data.phase3) || 0);
+          if (sum !== 99) {
+            alert('三个阶段的令牌数总和必须等于99！\n当前总和：' + sum);
+            return;
+          }
+        }
       }
 
       if (currentQuestionIndex < allQuestions.length - 1) {

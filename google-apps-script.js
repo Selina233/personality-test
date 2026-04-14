@@ -17,12 +17,29 @@
  */
 
 function doPost(e) {
+  // 添加详细日志
+  Logger.log('========== 收到 POST 请求 ==========');
+  Logger.log('请求时间: ' + new Date().toISOString());
+
   try {
+    // 检查是否有数据
+    if (!e || !e.postData || !e.postData.contents) {
+      Logger.log('❌ 错误: 没有接收到数据');
+      return ContentService.createTextOutput(JSON.stringify({
+        status: 'error',
+        message: 'No data received'
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    Logger.log('✅ 接收到的原始数据: ' + e.postData.contents);
+
     // 解析提交的数据
     const data = JSON.parse(e.postData.contents);
+    Logger.log('✅ 数据解析成功');
 
     // 获取 Google Sheet（默认获取第一个工作表）
     const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    Logger.log('✅ 成功获取工作表: ' + sheet.getName());
 
     // 提取数据字段
     const submittedAt = data.submittedAt || new Date().toISOString();
@@ -66,24 +83,30 @@ function doPost(e) {
       animalName             // 动物类型
     ];
 
+    Logger.log('✅ 准备插入的数据: ' + JSON.stringify(rowData));
+
     // 插入新行
     sheet.appendRow(rowData);
+    Logger.log('✅ 数据已成功插入到第 ' + sheet.getLastRow() + ' 行');
 
     // 返回成功响应
     return ContentService.createTextOutput(JSON.stringify({
       status: 'success',
       message: 'Data saved successfully',
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      row: sheet.getLastRow()
     })).setMimeType(ContentService.MimeType.JSON);
 
   } catch (error) {
-    // 记录错误到日志
-    Logger.log('Error: ' + error.toString());
+    // 记录详细错误
+    Logger.log('❌ 发生错误: ' + error.toString());
+    Logger.log('❌ 错误堆栈: ' + error.stack);
 
     // 返回错误响应
     return ContentService.createTextOutput(JSON.stringify({
       status: 'error',
-      message: error.toString()
+      message: error.toString(),
+      stack: error.stack
     })).setMimeType(ContentService.MimeType.JSON);
   }
 }
@@ -98,7 +121,54 @@ function doGet(e) {
 }
 
 /**
- * 测试函数 - 在 Apps Script 编辑器中运行此函数来测试
+ * 测试函数 - 在 Apps Script 编辑器中运行此函数来测试数据插入
+ * 这个函数会直接插入一行测试数据到你的 Sheet
+ */
+function testInsertData() {
+  try {
+    Logger.log('========== 开始测试数据插入 ==========');
+
+    // 获取工作表
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    Logger.log('✅ 成功获取工作表: ' + sheet.getName());
+
+    // 模拟测试数据（按照14列表头顺序）
+    const testRow = [
+      new Date().toISOString(),                    // 提交时间
+      'test_user_001',                             // 用户ID
+      'test@example.com',                          // 邮箱
+      '13800138000',                               // 手机号
+      'v1.0.0',                                    // 问卷版本
+      180,                                         // 测试时长
+      '{"b1":"5","b2":"3"}',                      // 行为测试答案
+      '{"bfi1":4,"bfi2":5,"bfi3":2,"bfi4":4,"bfi5":1}',  // BFI-2答案
+      '3.50',                                      // 外向性
+      '3.75',                                      // 宜人性
+      '3.20',                                      // 尽责性
+      '2.80',                                      // 神经质
+      '3.90',                                      // 开放性
+      '宇宙终极小猫咪'                              // 动物类型
+    ];
+
+    Logger.log('✅ 准备插入测试数据: ' + JSON.stringify(testRow));
+
+    // 插入数据
+    sheet.appendRow(testRow);
+
+    Logger.log('✅✅✅ 成功！数据已插入到第 ' + sheet.getLastRow() + ' 行');
+    Logger.log('请检查你的 Google Sheet，应该能看到新的一行测试数据');
+
+    return '测试成功！';
+
+  } catch (error) {
+    Logger.log('❌ 测试失败: ' + error.toString());
+    Logger.log('❌ 错误详情: ' + error.stack);
+    return '测试失败: ' + error.toString();
+  }
+}
+
+/**
+ * 查看数据结构的函数（不插入数据，只查看）
  */
 function testDataStructure() {
   const sampleData = {
