@@ -392,14 +392,14 @@
             </div>
             <p style="font-weight:600;margin:5px 0;">深度参与，助力学术研究</p>
             <ul style="line-height:1.8;color:#555;">
-              <li><strong>流程：</strong>完整填写情境实验问题和问卷（约 20-25 分钟）。</li>
+              <li><strong>流程：</strong>完整填写行为实验问题部分（16道问答题）和问卷部分（60道选择题）（总共约 20-30 分钟）。</li>
               <li><strong>专属收获：</strong>
                 <ul style="margin-top:8px;margin-bottom:0;">
                   <li><strong>深度分析报告：</strong>基于完整版量表生成的专业报告。涵盖 15 个性格子维度的精细画像，帮您更透彻地了解自己。</li>
                   <li><strong>现金抽奖资格：</strong>总额 <span style="color:#e74c3c;font-weight:600;">2000 元</span>的现金奖池。</li>
                 </ul>
               </li>
-              <li><strong>抽奖说明：</strong>只有通过数据质量检测的认真填写者方可进入抽奖池。</li>
+              <li><strong>抽奖说明：</strong>通过数据质量检测的认真填写者可进入抽奖池。</li>
               <li><strong>奖池配置：</strong>
                 <ul style="margin-top:8px;margin-bottom:0;">
                   <li>200 元 × 1 名</li>
@@ -419,7 +419,7 @@
             </div>
             <p style="font-weight:600;margin:5px 0;">快速测试，即刻获取结果</p>
             <ul style="line-height:1.8;color:#555;">
-              <li><strong>流程：</strong>仅需 5 分钟，快速匹配你的动物人格形象</li>
+              <li><strong>流程：</strong>仅需 5 分钟，30道选择题，快速匹配你的动物人格形象</li>
               <li><strong>说明：</strong>体验模式不参与抽奖，数据不进入学术分析样本库</li>
             </ul>
             <button class="btn btn-secondary" onclick="startTest('experience')" style="width:100%;margin-top:10px;">选择体验模式</button>
@@ -446,6 +446,16 @@
           </div>
         </div>
         <button class="btn" onclick="confirmUserInfo()">开始答题</button>
+      </div>
+    </div>
+
+    <!-- 指导语页面 -->
+    <div id="instruction-screen" class="hidden">
+      <div class="card">
+        <div id="instruction-content" style="padding: 20px;">
+          <!-- 指导语内容将由JavaScript动态填充 -->
+        </div>
+        <button class="btn" onclick="startQuestionnaire()" style="width: 100%; margin-top: 20px;">开始作答</button>
       </div>
     </div>
 
@@ -681,6 +691,7 @@
     let testMode = 'experience'; // 'research' 或 'experience'
     let testStartTime = null;
     let testEndTime = null;
+    let hasShownBFI2Instruction = false; // 是否已显示BFI-2指导语
 
     // ===== 界面控制 =====
 
@@ -741,6 +752,50 @@
       };
 
       testStartTime = Date.now();
+
+      // 显示指导语
+      showInstruction('start');
+    }
+
+    function showInstruction(type) {
+      const instructionContent = document.getElementById('instruction-content');
+
+      if (type === 'start') {
+        // 开始时的指导语
+        if (testMode === 'research') {
+          // 研究模式：显示行为测试指导语
+          instructionContent.innerHTML = `
+            <h2 style="color: var(--accent); margin-bottom: 20px;">第一部分：行为测试</h2>
+            <div style="line-height: 1.8; color: #555; font-size: 16px;">
+              <p>在接下来的任务中，你将完成一系列彼此独立的情境任务。每个任务都涉及简单的信息处理或决策。</p>
+              <p>请根据你的真实反应进行作答。这些任务没有标准答案，我们关注的是你在不同情境中的自然反应方式，而非表现好坏。</p>
+            </div>
+          `;
+        } else {
+          // 体验模式：显示BFI-2指导语
+          instructionContent.innerHTML = `
+            <h2 style="color: var(--accent); margin-bottom: 20px;">人格问卷</h2>
+            <div style="line-height: 1.8; color: #555; font-size: 16px;">
+              <p>接下来，您将看到一系列描述个人特点的陈述。</p>
+              <p>请根据您对自己的真实感受，选择最符合您的选项。</p>
+            </div>
+          `;
+        }
+      } else if (type === 'bfi2') {
+        // BFI-2问卷指导语
+        instructionContent.innerHTML = `
+          <h2 style="color: var(--accent); margin-bottom: 20px;">第二部分：人格问卷</h2>
+          <div style="line-height: 1.8; color: #555; font-size: 16px;">
+            <p>接下来，您将看到一系列描述个人特点的陈述。</p>
+            <p>请根据您对自己的真实感受，选择最符合您的选项。</p>
+          </div>
+        `;
+      }
+
+      showScreen('instruction-screen');
+    }
+
+    function startQuestionnaire() {
       showScreen('test-screen');
       renderQuestion();
     }
@@ -1014,6 +1069,17 @@
       }
 
       if (currentQuestionIndex < allQuestions.length - 1) {
+        // 检查是否是研究模式，且刚完成行为测试部分
+        if (testMode === 'research' &&
+            currentQuestionIndex === behaviorQuestions.length - 1 &&
+            !hasShownBFI2Instruction) {
+          // 显示BFI-2指导语
+          hasShownBFI2Instruction = true;
+          currentQuestionIndex++;
+          showInstruction('bfi2');
+          return;
+        }
+
         currentQuestionIndex++;
         renderQuestion();
       } else {
