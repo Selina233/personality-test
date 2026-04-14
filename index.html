@@ -1128,17 +1128,33 @@
         O: []  // 开放性 Open-Mindedness
       };
 
-      bfi2Questions.forEach(q => {
+      // 根据测试模式选择正确的题目列表
+      let questionList;
+      if (testMode === 'experience') {
+        questionList = bfi2QuestionsShort; // 体验模式：30题
+      } else if (testMode === 'research') {
+        questionList = bfi2Questions; // 研究模式：60题
+      } else {
+        questionList = bfi2Questions; // 默认：60题
+      }
+
+      questionList.forEach(q => {
         const rawScore = answers[q.id];
-        const score = q.reverse ? (6 - rawScore) : rawScore;
-        scores[q.dim].push(score);
+        if (rawScore) { // 只计算已回答的题目
+          const score = q.reverse ? (6 - rawScore) : rawScore;
+          scores[q.dim].push(score);
+        }
       });
 
       // 计算平均分
       const avgScores = {};
       for (const dim in scores) {
-        const sum = scores[dim].reduce((a, b) => a + b, 0);
-        avgScores[dim] = (sum / scores[dim].length).toFixed(2);
+        if (scores[dim].length > 0) {
+          const sum = scores[dim].reduce((a, b) => a + b, 0);
+          avgScores[dim] = (sum / scores[dim].length).toFixed(2);
+        } else {
+          avgScores[dim] = '0.00'; // 如果没有答案，默认为0
+        }
       }
 
       return avgScores;
