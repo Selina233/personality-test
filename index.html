@@ -670,8 +670,8 @@
       { id: 'bfi60', text: '有创意，能想出新点子', dim: 'O', reverse: false }
     ];
 
-    // 合并所有题目
-    const allQuestions = [...behaviorQuestions, ...bfi2Questions];
+    // 合并所有题目（根据模式决定）
+    let allQuestions = [...behaviorQuestions, ...bfi2Questions]; // 默认包含所有题目
 
     // 状态管理
     let currentQuestionIndex = 0;
@@ -692,6 +692,16 @@
 
     function startTest(mode) {
       testMode = mode;
+
+      // 根据模式设置题目
+      if (mode === 'experience') {
+        // 体验模式：只有BFI-2题目
+        allQuestions = [...bfi2Questions];
+      } else {
+        // 研究模式：完整题目（行为测试 + BFI-2）
+        allQuestions = [...behaviorQuestions, ...bfi2Questions];
+      }
+
       showScreen('user-info-screen');
 
       // 显示/隐藏手机号字段
@@ -741,12 +751,31 @@
 
     function renderQuestion() {
       const question = allQuestions[currentQuestionIndex];
-      const isBehavior = currentQuestionIndex < behaviorQuestions.length;
-      const displayIndex = currentQuestionIndex + 1;
-      const section = isBehavior ? '第一部分：行为测试' : '第二部分：BFI-2人格测试';
+
+      // 判断是否为行为测试题（体验模式下全部是BFI-2，所以isBehavior为false）
+      const isBehavior = testMode === 'research' && currentQuestionIndex < behaviorQuestions.length;
+
+      // 计算分段进度
+      let displayIndex, totalInSection, section;
+      if (isBehavior) {
+        displayIndex = currentQuestionIndex + 1;
+        totalInSection = behaviorQuestions.length;
+        section = '第一部分：行为测试';
+      } else {
+        // 体验模式或研究模式的BFI-2部分
+        if (testMode === 'experience') {
+          displayIndex = currentQuestionIndex + 1;
+          totalInSection = bfi2Questions.length;
+          section = 'BFI-2人格测试';
+        } else {
+          displayIndex = currentQuestionIndex - behaviorQuestions.length + 1;
+          totalInSection = bfi2Questions.length;
+          section = '第二部分：BFI-2人格测试';
+        }
+      }
 
       document.getElementById('question-number').textContent =
-        `${section} - 第 ${displayIndex}/${allQuestions.length} 题`;
+        `${section} - 第 ${displayIndex}/${totalInSection} 题`;
       document.getElementById('question-text').textContent =
         isBehavior ? question.text : `我是一个${question.text}的人`;
 
@@ -963,8 +992,8 @@
         return;
       }
 
-      // 行为测试题的额外验证
-      const isBehavior = currentQuestionIndex < behaviorQuestions.length;
+      // 行为测试题的额外验证（只在研究模式且是行为测试题时）
+      const isBehavior = testMode === 'research' && currentQuestionIndex < behaviorQuestions.length;
       if (isBehavior) {
         // 检查追问是否已回答（除了bq7，因为它的追问已经是独立题目）
         if (question.followup && question.id !== 'bq7' && !answers[question.id + '_followup']) {
