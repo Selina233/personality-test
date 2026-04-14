@@ -383,6 +383,18 @@
         </div>
 
         <div style="text-align:left;margin-top:30px;">
+          <!-- 重要提示：浏览器填写 -->
+          <div style="background:#FFF3CD;border:2px solid #FFA726;border-radius:12px;padding:16px;margin-bottom:20px;">
+            <div style="display:flex;align-items:center;margin-bottom:8px;">
+              <span style="font-size:20px;margin-right:8px;">⚠️</span>
+              <h4 style="margin:0;color:#E65100;">重要提示</h4>
+            </div>
+            <p style="margin:0;line-height:1.6;color:#5D4037;">
+              <strong>请一定复制链接到浏览器（Safari/Chrome等）中填写！</strong><br>
+              在微信中填写可能会导致数据提交失败，影响您获得分析报告和抽奖资格。
+            </p>
+          </div>
+
           <h3>请选择你的参与方式：</h3>
 
           <div style="border:2px solid var(--accent);border-radius:12px;padding:20px;margin-bottom:20px;background:#fff;">
@@ -1309,10 +1321,28 @@
 
       // 只有研究模式才保存数据到在线表格
       if (testMode === 'research') {
-        // 后台异步提交，不等待响应
-        saveToGoogleSheets(testData);
-        // 给请求 100ms 时间发出（避免用户立刻关闭导致数据丢失）
-        await new Promise(resolve => setTimeout(resolve, 100));
+        // 显示提交状态
+        showSubmitStatus('正在保存数据...', 'loading');
+
+        // 提交数据并等待完成
+        const saveResult = await saveToGoogleSheets(testData);
+
+        if (saveResult.success) {
+          showSubmitStatus('✅ 数据已成功保存', 'success');
+        } else {
+          showSubmitStatus('⚠️ 数据提交遇到问题，但已本地备份', 'warning');
+          // 本地备份
+          try {
+            const backupKey = `backup_${Date.now()}`;
+            localStorage.setItem(backupKey, JSON.stringify(testData));
+            console.log(`数据已备份到本地: ${backupKey}`);
+          } catch (e) {
+            console.error('本地备份失败:', e);
+          }
+        }
+
+        // 等待1秒让用户看到提交状态
+        await new Promise(resolve => setTimeout(resolve, 1000));
       }
 
       // 显示结果
@@ -1322,29 +1352,81 @@
 
     // ===== Google Sheets 集成（使用 Apps Script）=====
 
-    async function saveToGoogleSheets(data) {
+    // 显示提交状态
+    function showSubmitStatus(message, type) {
+      const statusDiv = document.getElementById('submit-status');
+      if (!statusDiv) {
+        const div = document.createElement('div');
+        div.id = 'submit-status';
+        div.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:12px 24px;border-radius:8px;font-size:14px;font-weight:500;z-index:10000;box-shadow:0 4px 12px rgba(0,0,0,0.15);';
+        document.body.appendChild(div);
+      }
+
+      const statusElement = document.getElementById('submit-status');
+      statusElement.textContent = message;
+
+      // 根据类型设置样式
+      if (type === 'loading') {
+        statusElement.style.background = '#4A90E2';
+        statusElement.style.color = 'white';
+      } else if (type === 'success') {
+        statusElement.style.background = '#4CAF50';
+        statusElement.style.color = 'white';
+      } else if (type === 'warning') {
+        statusElement.style.background = '#FF9800';
+        statusElement.style.color = 'white';
+      }
+
+      statusElement.style.display = 'block';
+    }
+
+    async function saveToGoogleSheets(data, retryCount = 0) {
+      const MAX_RETRIES = 3;
+      const RETRY_DELAY = 1000; // 1秒
+      const REQUEST_TIMEOUT = 8000; // 8秒超时
+
       // 替换为你的 Google Apps Script Web 应用 URL
       const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxmrCZwrcaa1x7PBnuMLKsNB4AKP55WqulzQnq_BgFPuJ8B-MZuEtqgoo9Oy3675yuwzw/exec';
 
       try {
+        // 使用 AbortController 实现超时控制
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
+
         // 提交数据到 Google Apps Script
-        // keepalive: true 确保即使用户关闭页面，请求也会完成
         const response = await fetch(SCRIPT_URL, {
           method: 'POST',
           mode: 'no-cors', // Apps Script 需要 no-cors 模式
           keepalive: true, // 关键：即使页面关闭也继续发送
+          signal: controller.signal,
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify(data)
         });
 
-        // 注意：no-cors 模式下无法读取响应，但数据已提交
+        clearTimeout(timeoutId);
+
+        // 注意：no-cors 模式下无法读取响应内容，但请求已发送
         console.log('数据已提交到 Google Sheets');
 
+        // 等待额外2秒确保数据真正到达服务器
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        return { success: true };
+
       } catch (error) {
-        console.error('数据提交失败:', error);
-        // 静默失败，不显示给用户
+        console.error(`数据提交失败 (尝试 ${retryCount + 1}/${MAX_RETRIES + 1}):`, error);
+
+        // 如果是超时或网络错误，且还有重试次数，则重试
+        if (retryCount < MAX_RETRIES && (error.name === 'AbortError' || error.name === 'TypeError')) {
+          console.log(`${RETRY_DELAY}ms 后重试...`);
+          await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+          return saveToGoogleSheets(data, retryCount + 1);
+        }
+
+        // 重试次数用尽或其他错误
+        return { success: false, error: error.message };
       }
     }
   </script>
