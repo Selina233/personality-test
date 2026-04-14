@@ -1,14 +1,27 @@
 {
-  "version": "v1.0.0",
-  "releaseDate": "2026-04-10",
-  "description": "初始版本：2道行为测试+5道BFI-2测试（测试版）",
+  "version": "v2.0.0",
+  "releaseDate": "2026-04-14",
+  "description": "完整版：16道行为测试+60道BFI-2测试（研究模式）+30道BFI-2测试（体验模式）",
   "questionCounts": {
-    "behavior": 2,
-    "bfi2": 5,
-    "total": 7
+    "behavior": 16,
+    "bfi2_research": 60,
+    "bfi2_experience": 30,
+    "total_research": 76,
+    "total_experience": 30
   },
   "animalTypes": 32,
   "changelog": [
+    {
+      "version": "v2.0.0",
+      "date": "2026-04-14",
+      "changes": [
+        "完整版发布",
+        "行为测试题从2题扩展到16题",
+        "BFI-2测试题扩展到60题（研究模式）",
+        "新增体验模式（30题）",
+        "优化题目文本：bq1/bq2删除'每人拥有'，bq6翻倍从2倍改为3倍"
+      ]
+    },
     {
       "version": "v1.0.0",
       "date": "2026-04-10",

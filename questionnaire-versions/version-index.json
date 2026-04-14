@@ -1,28 +1,29 @@
 {
-  "currentVersion": "v1.0.0",
+  "currentVersion": "v2.0.0",
   "versions": [
+    {
+      "version": "v2.0.0",
+      "releaseDate": "2026-04-14",
+      "status": "released",
+      "description": "完整版：16道行为测试+60道BFI-2测试（研究模式）+30道BFI-2测试（体验模式）",
+      "totalQuestions": 76,
+      "file": "questionnaire-versions/v2.0.0.json",
+      "isActive": true
+    },
     {
       "version": "v1.0.0",
       "releaseDate": "2026-04-10",
-      "status": "testing",
+      "status": "deprecated",
       "description": "测试版：2道行为测试+5道BFI-2测试",
       "totalQuestions": 7,
       "file": "questionnaire-versions/v1.0.0.json",
-      "isActive": true
+      "isActive": false
     }
   ],
   "metadata": {
-    "lastUpdated": "2026-04-13",
-    "totalVersions": 1,
+    "lastUpdated": "2026-04-14",
+    "totalVersions": 2,
     "description": "问卷版本索引文件，记录所有历史版本"
   },
-  "plannedVersions": [
-    {
-      "version": "v2.0.0",
-      "plannedDate": "2026-04-24",
-      "description": "完整版：30道行为测试+60道BFI-2测试",
-      "totalQuestions": 90,
-      "status": "planned"
-    }
-  ]
+  "plannedVersions": []
 }

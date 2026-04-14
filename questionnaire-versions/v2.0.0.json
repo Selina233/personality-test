@@ -1,0 +1,46 @@
+{
+  "version": "v2.0.0",
+  "releaseDate": "2026-04-14",
+  "description": "完整版：16道行为测试+60道BFI-2测试（研究模式）+30道BFI-2测试（体验模式）",
+  "questionCounts": {
+    "behavior": 16,
+    "bfi2_research": 60,
+    "bfi2_experience": 30,
+    "total_research": 76,
+    "total_experience": 30
+  },
+  "animalTypes": 32,
+  "modes": {
+    "research": {
+      "enabled": true,
+      "collectsUserInfo": true,
+      "savesToGoogleSheets": true,
+      "totalQuestions": 76
+    },
+    "experience": {
+      "enabled": true,
+      "collectsUserInfo": false,
+      "savesToGoogleSheets": false,
+      "totalQuestions": 30
+    }
+  },
+  "changelog": [
+    {
+      "version": "v2.0.0",
+      "date": "2026-04-14",
+      "changes": [
+        "完整版发布",
+        "行为测试题从2题扩展到16题（包含bq7_followup）",
+        "BFI-2测试题从5题扩展到60题（研究模式）",
+        "新增体验模式（30道BFI-2题，每个子维度2题）",
+        "优化bq1、bq2题目文本（删除'每人拥有'）",
+        "修改bq6：翻倍倍数从2倍改为3倍",
+        "优化所有题目格式（删除段落间空行）",
+        "体验模式跳过用户信息收集",
+        "体验模式不保存到Google Sheets",
+        "修复BFI-2分数计算逻辑（支持不同题目数量）",
+        "修复进度显示（分段显示行为测试和BFI-2）"
+      ]
+    }
+  ]
+}
