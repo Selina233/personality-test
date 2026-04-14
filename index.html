@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>人格与行为测试</title>
   <script src="behavior-questions.js"></script>
+  <script src="bfi2-questions-short.js"></script>
   <style>
     :root {
       --bg: #f6faf6;
@@ -695,10 +696,10 @@
 
       // 根据模式设置题目
       if (mode === 'experience') {
-        // 体验模式：只有BFI-2题目
-        allQuestions = [...bfi2Questions];
+        // 体验模式：30题BFI-2精简版（每个子维度2题）
+        allQuestions = [...bfi2QuestionsShort];
       } else {
-        // 研究模式：完整题目（行为测试 + BFI-2）
+        // 研究模式：完整题目（16道行为测试 + 60道BFI-2）
         allQuestions = [...behaviorQuestions, ...bfi2Questions];
       }
 
