@@ -99,19 +99,21 @@
     <h1>📊 体验模式统计</h1>
 
     <div class="stat-card">
-      <div class="stat-label">体验模式完成人数</div>
+      <div class="stat-label">本设备体验次数</div>
       <div class="stat-value" id="count">-</div>
-      <div class="stat-subtitle">自启用统计以来</div>
+      <div class="stat-subtitle">基于浏览器localStorage</div>
     </div>
 
     <div class="info">
-      <p><strong>📝 说明：</strong></p>
+      <p><strong>📝 统计说明：</strong></p>
       <ul style="margin-top:10px; margin-left:20px;">
-        <li>此统计仅记录体验模式的访问次数</li>
-        <li>使用免费的CountAPI服务，不占用Google Sheet配额</li>
-        <li>数据实时更新，无需刷新页面</li>
+        <li>此统计基于浏览器localStorage，只记录本设备访问次数</li>
+        <li>不同设备/浏览器的统计相互独立</li>
+        <li>清除浏览器数据会重置计数</li>
         <li>体验模式不收集用户信息，完全匿名</li>
       </ul>
+      <p style="margin-top:15px;"><strong>💡 如需查看全局统计：</strong></p>
+      <p style="margin-top:5px;">建议在GitHub Pages部署后使用<a href="https://analytics.google.com/" target="_blank" style="color:#6c8d71;">Google Analytics</a>获取完整访问数据。</p>
     </div>
 
     <div style="text-align:center;">
@@ -120,26 +122,19 @@
   </div>
 
   <script>
-    // 加载统计数据
+    // 加载本地统计数据
     function loadStats() {
-      document.getElementById('count').innerHTML = '<span class="loading">加载中...</span>';
-
-      fetch('https://api.countapi.xyz/get/personality-test-selina/experience-mode')
-        .then(res => res.json())
-        .then(data => {
-          document.getElementById('count').textContent = data.value.toLocaleString();
-        })
-        .catch(err => {
-          console.error('加载统计失败:', err);
-          document.getElementById('count').textContent = '加载失败';
-        });
+      try {
+        const count = parseInt(localStorage.getItem('experience-mode-count') || '0');
+        document.getElementById('count').textContent = count.toLocaleString();
+      } catch (e) {
+        console.error('加载统计失败:', e);
+        document.getElementById('count').textContent = '0';
+      }
     }
 
     // 页面加载时获取统计
     loadStats();
-
-    // 每30秒自动刷新
-    setInterval(loadStats, 30000);
   </script>
 </body>
 </html>

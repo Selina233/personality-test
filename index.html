@@ -712,11 +712,15 @@
         allQuestions = [...bfi2QuestionsShort];
         console.log('✅ 体验模式启动，题目数量:', allQuestions.length);
 
-        // 体验模式统计（使用CountAPI，不占用Google Sheet配额）
-        fetch('https://api.countapi.xyz/hit/personality-test-selina/experience-mode')
-          .then(res => res.json())
-          .then(data => console.log('体验模式访问统计:', data.value))
-          .catch(err => console.log('统计失败（不影响测试）:', err));
+        // 体验模式统计（使用localStorage本地计数）
+        try {
+          let count = parseInt(localStorage.getItem('experience-mode-count') || '0');
+          count++;
+          localStorage.setItem('experience-mode-count', count.toString());
+          console.log('体验模式本地统计:', count);
+        } catch (e) {
+          console.log('统计失败（不影响测试）:', e);
+        }
 
         // 体验模式跳过信息收集，直接开始
         userInfo = {
@@ -1277,17 +1281,17 @@
         scoresGrid.appendChild(scoreDiv);
       }
 
-      // 显示统计数据（体验模式）
+      // 显示统计数据（体验模式 - 使用localStorage本地计数）
       if (testMode === 'experience') {
-        fetch('https://api.countapi.xyz/get/personality-test-selina/experience-mode')
-          .then(res => res.json())
-          .then(data => {
+        try {
+          const count = parseInt(localStorage.getItem('experience-mode-count') || '0');
+          if (count > 0) {
             document.getElementById('stats-display').textContent =
-              `已有 ${data.value} 人完成体验模式测试`;
-          })
-          .catch(err => {
-            console.log('加载统计失败:', err);
-          });
+              `你是本设备上第 ${count} 位体验用户`;
+          }
+        } catch (e) {
+          console.log('加载统计失败:', e);
+        }
       }
     }
 
