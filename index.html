@@ -568,6 +568,26 @@
           </p>
         </div>
 
+        <!-- 研究模式专属：数据下载和邮件提示 -->
+        <div id="research-backup-notice" class="hidden" style="margin-top:30px;padding:25px;background:#FFF3E0;border-radius:12px;border:2px solid #FF9800;">
+          <h3 style="color:#E65100;margin-top:0;">📧 重要提醒（研究参与者）</h3>
+          <p style="line-height:1.8;color:#5D4037;margin-bottom:15px;">
+            为了<strong>确保您能收到详细分析报告</strong>并<strong>参与抽奖</strong>，我们强烈建议您：
+          </p>
+          <ol style="line-height:2;color:#5D4037;margin-bottom:20px;">
+            <li>点击下方按钮<strong>下载您的测试结果</strong>（JSON格式）</li>
+            <li>发送邮件到 <strong style="color:#E65100;">yytpku@pku.edu.cn</strong>，附上下载的文件</li>
+            <li>邮件主题写：<strong>人格测试结果提交</strong></li>
+          </ol>
+          <p style="font-size:14px;color:#795548;margin-bottom:20px;">
+            💡 <strong>为什么需要这样做？</strong><br>
+            由于网络或技术原因，部分数据可能未能成功提交到我们的服务器。通过邮件发送结果文件，可以确保您的宝贵数据不会丢失，并保证您能顺利获得分析报告和抽奖资格。
+          </p>
+          <button class="btn" onclick="downloadTestData()" style="width:100%;font-size:16px;padding:14px;">
+            📥 下载我的测试结果
+          </button>
+        </div>
+
         <div style="margin-top:30px;text-align:center;color:#999;font-size:14px;">
           感谢你的参与！🎉
         </div>
@@ -1323,6 +1343,9 @@
       // 记录用户填写的问卷版本
       testData.questionnaireVersion = questionnaireVersion ? questionnaireVersion.version : 'unknown';
 
+      // 保存到全局变量供下载使用
+      globalTestData = testData;
+
       // 只有研究模式才保存数据到在线表格
       if (testMode === 'research') {
         // 显示提交状态
@@ -1352,6 +1375,42 @@
       // 显示结果
       displayResults(bfi2Scores, animalType);
       showScreen('result-screen');
+
+      // 研究模式显示数据下载提示
+      if (testMode === 'research') {
+        document.getElementById('research-backup-notice').classList.remove('hidden');
+      }
+    }
+
+    // 全局存储testData供下载使用
+    let globalTestData = null;
+
+    // 下载测试数据
+    function downloadTestData() {
+      if (!globalTestData) {
+        alert('数据不存在，请刷新页面重新测试');
+        return;
+      }
+
+      // 创建文件名（包含用户ID和时间戳）
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+      const filename = `personality-test-${globalTestData.userInfo.userId}-${timestamp}.json`;
+
+      // 创建下载链接
+      const dataStr = JSON.stringify(globalTestData, null, 2);
+      const dataBlob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(dataBlob);
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      link.click();
+
+      // 清理URL对象
+      URL.revokeObjectURL(url);
+
+      // 提示用户
+      alert('✅ 文件已下载！\n\n请记得发送到邮箱：yytpku@pku.edu.cn\n邮件主题：人格测试结果提交');
     }
 
     // ===== Google Sheets 集成（使用 Apps Script）=====
