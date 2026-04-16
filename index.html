@@ -405,6 +405,38 @@
             </div>
           </div>
 
+          <!-- 下载功能测试 -->
+          <div style="background:#FFF9E6;border:2px solid #FFB300;border-radius:12px;padding:18px;margin-bottom:20px;">
+            <div style="display:flex;align-items:center;margin-bottom:10px;">
+              <span style="font-size:20px;margin-right:8px;">🧪</span>
+              <h4 style="margin:0;color:#F57C00;">下载功能测试（仅研究模式需要）</h4>
+            </div>
+            <div style="line-height:1.8;color:#E65100;font-size:14px;">
+              <p style="margin:0 0 12px 0;">
+                <strong>📌 重要说明：</strong>
+              </p>
+              <ul style="margin:0 0 12px 0;padding-left:20px;">
+                <li><strong>研究模式 + 无法科学上网：</strong><br>
+                  请务必先点击下方按钮测试下载功能！确认能下载后再开始填写，否则可能做完测试后无法保存数据。
+                </li>
+                <li style="margin-top:8px;"><strong>研究模式 + 可以科学上网：</strong><br>
+                  数据会自动保存到Google表格，无需测试下载功能。
+                </li>
+                <li style="margin-top:8px;"><strong>体验模式：</strong><br>
+                  不管能否科学上网或下载数据，都能直接在页面上看到你的动物人格结果，无需担心。
+                </li>
+              </ul>
+              <button
+                onclick="testDownloadFunction()"
+                style="background:#FF9800;color:white;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-weight:600;font-size:14px;width:100%;">
+                🔍 测试下载功能（研究模式无VPN必测）
+              </button>
+              <p style="margin:12px 0 0 0;font-size:13px;color:#BF360C;">
+                点击后会下载一个测试文件。如果下载成功，说明您的浏览器支持下载，可以放心进行研究模式测试。
+              </p>
+            </div>
+          </div>
+
           <h3>请选择你的参与方式：</h3>
 
           <div style="border:2px solid var(--accent);border-radius:12px;padding:20px;margin-bottom:20px;background:#fff;">
@@ -1421,6 +1453,45 @@
 
       // 提示用户
       alert('✅ 文件已下载！\n\n请记得发送到邮箱：yytpku@pku.edu.cn\n邮件主题：人格测试结果提交');
+    }
+
+    // 测试下载功能
+    function testDownloadFunction() {
+      try {
+        // 创建一个简单的测试数据
+        const testData = {
+          message: '下载功能测试成功！',
+          timestamp: new Date().toISOString(),
+          note: '如果您看到这个文件，说明您的浏览器支持下载功能，可以放心进行测试。',
+          instructions: '完成测试后，请下载真实的测试结果文件并发送到邮箱：yytpku@pku.edu.cn'
+        };
+
+        // 创建文件名
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+        const filename = `download-test-${timestamp}.json`;
+
+        // 创建下载链接（与正式下载使用相同的方法）
+        const dataStr = JSON.stringify(testData, null, 2);
+        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(dataBlob);
+
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        link.click();
+
+        // 清理URL对象
+        URL.revokeObjectURL(url);
+
+        // 提示用户
+        setTimeout(() => {
+          alert('✅ 下载测试成功！\n\n如果您的浏览器成功下载了测试文件，说明下载功能正常。\n您可以放心开始测试，测试结束后使用相同的方式下载真实数据。\n\n如果没有下载成功，请尝试：\n1. 检查浏览器下载设置\n2. 允许此网站下载文件\n3. 使用Chrome或Safari等现代浏览器');
+        }, 300);
+
+      } catch (error) {
+        console.error('下载测试失败:', error);
+        alert('❌ 下载测试失败！\n\n错误信息：' + error.message + '\n\n建议：\n1. 请使用Chrome、Safari、Edge等现代浏览器\n2. 检查浏览器是否阻止了下载\n3. 尝试允许此网站的下载权限');
+      }
     }
 
     // ===== Google Sheets 集成（使用 Apps Script）=====
