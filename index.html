@@ -1367,7 +1367,7 @@
         if (saveResult.success) {
           showSubmitStatus('✅ 数据已成功保存', 'success');
         } else {
-          showSubmitStatus('⚠️ 数据提交遇到问题，但已本地备份', 'warning');
+          showSubmitStatus('⚠️ 数据提交遇到问题，但已保存，请在本页最下方手动下载', 'warning');
           // 本地备份
           try {
             const backupKey = `backup_${Date.now()}`;
