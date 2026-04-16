@@ -1460,15 +1460,14 @@
       try {
         // 创建一个简单的测试数据
         const testData = {
-          message: '下载功能测试成功！',
+          message: '🎉 恭喜！下载功能测试成功！',
           timestamp: new Date().toISOString(),
-          note: '如果您看到这个文件，说明您的浏览器支持下载功能，可以放心进行测试。',
-          instructions: '完成测试后，请下载真实的测试结果文件并发送到邮箱：yytpku@pku.edu.cn'
+          note: '如果您能看到这个文件，说明您的浏览器支持下载功能。',
+          instructions: '请确认您能找到这个测试文件，然后就可以放心开始正式测试了。完成测试后，请下载真实的测试结果文件并发送到邮箱：yytpku@pku.edu.cn'
         };
 
-        // 创建文件名
-        const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
-        const filename = `download-test-${timestamp}.json`;
+        // 创建一个容易识别的文件名
+        const filename = `测试文件-请确认能找到此文件.json`;
 
         // 创建下载链接（与正式下载使用相同的方法）
         const dataStr = JSON.stringify(testData, null, 2);
@@ -1483,14 +1482,14 @@
         // 清理URL对象
         URL.revokeObjectURL(url);
 
-        // 提示用户
+        // 提示用户 - 强调必须找到文件
         setTimeout(() => {
-          alert('✅ 下载测试成功！\n\n如果您的浏览器成功下载了测试文件，说明下载功能正常。\n您可以放心开始测试，测试结束后使用相同的方式下载真实数据。\n\n如果没有下载成功，请尝试：\n1. 检查浏览器下载设置\n2. 允许此网站下载文件\n3. 使用Chrome或Safari等现代浏览器');
+          alert('📥 已触发下载！\n\n⚠️ 重要：请立即确认您能找到下载的文件！\n\n📁 文件名：测试文件-请确认能找到此文件.json\n\n🔍 如何查找：\n1. 手机：查看"文件管理"或"下载"文件夹\n2. 电脑Chrome：点击浏览器右上角↓图标\n3. 电脑Safari：点击右上角下载按钮\n4. 一般在"下载"或"Downloads"文件夹\n\n✅ 只有确认找到这个测试文件后，才能开始填写问卷！\n\n❌ 如果找不到文件：\n- 可能被浏览器阻止了，请允许下载\n- 尝试更换浏览器（推荐Chrome/Safari）\n- 或选择"体验模式"（无需下载）');
         }, 300);
 
       } catch (error) {
         console.error('下载测试失败:', error);
-        alert('❌ 下载测试失败！\n\n错误信息：' + error.message + '\n\n建议：\n1. 请使用Chrome、Safari、Edge等现代浏览器\n2. 检查浏览器是否阻止了下载\n3. 尝试允许此网站的下载权限');
+        alert('❌ 下载测试失败！\n\n错误信息：' + error.message + '\n\n建议：\n1. 请使用Chrome、Safari、Edge等现代浏览器\n2. 检查浏览器是否阻止了下载\n3. 尝试允许此网站的下载权限\n4. 或选择"体验模式"（无需下载）');
       }
     }
 
